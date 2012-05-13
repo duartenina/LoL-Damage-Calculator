@@ -73,3 +73,14 @@ def create_fixed_item_set (opt):
     if ((opt == 4) or (opt == 5)): items.append(get_item("GhostBlade", all_items))
         
     return items    
+
+def get_item_list ():
+    all_items = load_items()
+    
+    item_list = []
+    
+    for item in all_items:
+        item_list.append(item.name)
+    
+    return item_list
+    
