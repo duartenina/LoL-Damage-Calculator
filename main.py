@@ -21,12 +21,15 @@ def main_menu ():
     all_items  = load_items()
     
     print "\n******League of Legends Damage Calculator******\n"
-    n_builds = raw_input("How many builds do you want to graph?\n")
-    if (n_builds.isdigit()):
-        n_builds = int(n_builds)
-    else:
-        error("number of builds")
     
+    while 1:
+        n_builds = raw_input("How many builds do you want to graph (1 to 6)?\n")
+        if (n_builds.isdigit()):
+            break
+        else:
+            print "Input error."
+    
+    n_builds = int(n_builds)
     if (n_builds < 1): n_builds = 1
     if (n_builds > 6): n_builds = 6
     
@@ -39,16 +42,23 @@ def main_menu ():
         print ""
         item_sets.append(create_item_set())
         print ""
-        times.append(int(input("The champion will attack continually for how much time (in seconds)?\n")))
+        times.append(get_time())
         
     draw_graph(champs, item_sets, times)
     
 def draw_graph (champs, item_sets, times):
-    armor = raw_input("\nGraph from 0 armor to ?\n")
-    if (armor.isdigit()):
-        armor = int(armor)
-    else:
-        armor = 400
+    while 1:
+        armor = raw_input("\nGraph from 0 armor to (maximum = 500)?\n")
+        if (armor.isdigit()):
+            break
+        else:
+            print "Input error."
+    
+    armor = int(armor)
+    if (armor < 1): armor = 1
+    if (armor > 500): armor = 500
+    
+    print ""
     
     while 1:
         option = raw_input("Graph 'DPS' or 'DPSperGold' ('End' to finish)?\n").lower()
@@ -58,6 +68,8 @@ def draw_graph (champs, item_sets, times):
             make_dps_armor_graph (armor, champs, item_sets, times)
         elif (option == "dpspergold"):
             make_dpspergold_armor_graph (armor, champs, item_sets, times)
+        else:
+            print "Incorrect option."
     
 #*******************main*******************
 

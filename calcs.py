@@ -35,7 +35,7 @@ def calc_dps (armor,champ,items,time):
         if (item.short.lower() == "gb"): gb = 1
     
     gb_time = 0
-    if ((gb == 1) & (time < 8)):
+    if ((gb == 1) and (time < 8)):
         gb_time = time
     else:
         gb_time = 8
@@ -83,7 +83,7 @@ def calc_dps_gold (armor,champ,items,time):
         if (item.short.lower() == "gb"): gb = 1
     
     gb_time = 0
-    if ((gb == 1) & (time < 8)):
+    if ((gb == 1) and (time < 8)):
         gb_time = time
     else:
         gb_time = 8

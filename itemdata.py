@@ -35,7 +35,7 @@ def load_items ():
     
 def get_item (name, items):
     for item in items:
-        if ((item.name.lower() == name.lower()) | (item.short.lower() == name.lower())):
+        if ((item.name.lower() == name.lower()) or (item.short.lower() == name.lower())):
             return item
     
     return None
@@ -43,12 +43,20 @@ def get_item (name, items):
 def create_item_set ():
     all_items = load_items()
     items = []
+    exit = 0
     
-    print "The champion will be using these items (maximum of 5)"
+    print "The champion will be using these items (maximum of 5).\nInsert the item name (examples: 'InfinityEdge' or 'IE'; 'End' to end the build)\n"
     for i in xrange(5):
-        item_name = raw_input("Item name (examples: 'InfinityEdge' or 'IE'; 'End' to end the build)\n")
-        if (item_name.lower() == "end"): break
-        items.append(get_item(item_name, all_items))
+        item = None
+        while not item:
+            item_name = raw_input("Item %d of 5: " % (i+1))
+            if (item_name.lower() == "end"):
+                exit = 1
+                break
+            item = get_item(item_name, all_items)
+        if (exit == 1):
+            break
+        items.append(item)
 
     return items
     
@@ -59,10 +67,9 @@ def create_fixed_item_set (opt):
     items.append(get_item("InfinityEdge", all_items))
     items.append(get_item("InfinityEdge", all_items))
     items.append(get_item("PhantomDancer", all_items))
-    if ((opt != 3) & (opt != 5)): items.append(get_item("Bloodthirster", all_items))
-    if ((opt == 1) | (opt == 3) | (opt == 5)): items.append(get_item("BlackCleaver", all_items))
-    if ((opt == 2) | (opt == 3)): items.append(get_item("LastWhisper", all_items))
-    if ((opt == 4) | (opt == 5)): items.append(get_item("GhostBlade", all_items))
+    if ((opt != 3) and (opt != 5)): items.append(get_item("Bloodthirster", all_items))
+    if ((opt == 1) or (opt == 3) or (opt == 5)): items.append(get_item("BlackCleaver", all_items))
+    if ((opt == 2) or (opt == 3)): items.append(get_item("LastWhisper", all_items))
+    if ((opt == 4) or (opt == 5)): items.append(get_item("GhostBlade", all_items))
         
     return items    
-    

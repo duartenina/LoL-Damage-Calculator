@@ -1,4 +1,5 @@
 import csv
+from funcs import *
 
 class champion:
     def __init__ (self, champ_data):
@@ -56,16 +57,23 @@ def load_champs ():
     return champs
     
 def get_champ (name, champs):
-    if (name == None):
-        name = raw_input("What champion (example: Ashe)?\n")
-        name = name.strip()
-
-    for temp in champs:
-        if (temp.name.lower() == name.lower()):
-            return temp
+    champ = None
     
-    error("champion name")
-    return None
+    while not champ:
+        if (name == None):
+            name = raw_input("What champion (example: Ashe)?\n")
+            name = name.strip()
+        
+        for temp in champs:
+            if (temp.name.lower() == name.lower()):
+                champ = temp
+                
+        name = None
+        
+        if (champ == None):
+            print "Champion not found.\n"
+    
+    return champ
     
 def create_champ ():
     champ = champion(None)
@@ -155,5 +163,7 @@ def change_champ (champ):
             if (is_number(new_stat)):
                 new_stat = float(new_stat)
                 champ.speed = new_stat
+                
+        else:
+            print "Stat not found."
     return champ    
-    

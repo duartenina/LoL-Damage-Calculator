@@ -14,7 +14,7 @@ def get_label (champ, items, time):
     return label
     
 def make_dps_armor_graph (armor_max, champs, items, times):
-    if ((len(items) != len(times)) | (len(champs) != len(items))):
+    if ((len(items) != len(times)) or (len(champs) != len(items))):
         return None
 
     n_graphs = len(items)
@@ -36,12 +36,12 @@ def make_dps_armor_graph (armor_max, champs, items, times):
     DefaultSize = fig.get_size_inches()
     fig.set_size_inches( (DefaultSize[0]*2, DefaultSize[1]*2) )
     
-    fig.savefig("dps_armor_graph.png")
+    fig.savefig("graphs\dps_armor_graph.png")
     fig.show()
     wait()
     
 def make_dpspergold_armor_graph (armor_max, champs, items, times):
-    if ((len(items) != len(times)) | (len(champs) != len(items))):
+    if ((len(items) != len(times)) or (len(champs) != len(items))):
         return None
 
     n_graphs = len(items)
@@ -63,6 +63,6 @@ def make_dpspergold_armor_graph (armor_max, champs, items, times):
     DefaultSize = fig.get_size_inches()
     fig.set_size_inches( (DefaultSize[0]*2, DefaultSize[1]*2) )
     
-    fig.savefig("dpspergold_armor_graph.png")
+    fig.savefig("graphs\dpspergold_armor_graph.png")
     fig.show()
     wait()
