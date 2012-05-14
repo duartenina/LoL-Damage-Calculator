@@ -1,5 +1,8 @@
 import csv
 
+from code.extra import *
+
+
 class item:
     def __init__ (self, item_data):
         if (item_data == None):
@@ -83,4 +86,19 @@ def get_item_list ():
         item_list.append(item.name)
     
     return item_list
+    
+def get_item_time (item_name, run_time):
+    time  = 0
+    speed = 0
+    
+    if (item_name == 'gb'):
+        item_time  = 8
+        speed      = 0.5
+    
+    if (run_time < item_time):
+        time = run_time
+    else:
+        time = item_time
+        
+    return {'time': time, 'speed': speed}
     

@@ -1,5 +1,8 @@
 import csv
-from funcs import *
+from math import *
+
+from code.extra import *
+
 
 class champion:
     def __init__ (self, champ_data):
@@ -167,3 +170,27 @@ def change_champ (champ):
         else:
             print "Stat not found."
     return champ    
+
+def get_champ_time (champ, run_time):
+    time       = 0
+    skill_time = 0
+    speed      = 0
+    
+    if   (champ.name.lower() == 'tristana'):
+        skill_time = 7
+        speed = min((champ.level+1)/2, 5)
+        ranks = {1: .3, 2: .45, 3: .6, 4: .75, 5: .9}
+        speed = ranks[speed]
+    elif (champ.name.lower() == 'missfortune'):
+        skill_time = 6
+        speed = min((champ.level+1)/2, 5)
+        ranks = {1: .3, 2: .35, 3: .4, 4: .45, 5: .5}
+        speed = ranks[speed]
+
+    if (run_time < skill_time):
+        time = run_time
+    else:
+        time = skill_time
+        
+    return {'time': time, 'speed': speed}
+    

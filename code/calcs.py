@@ -1,4 +1,7 @@
-from funcs import *
+from code.champ import *
+from code.item  import *
+from code.extra import *
+
 
 def reduced_armor (armor, flat_penetration, percent_penetration):
     total_armor = (armor - flat_penetration) * (1 - percent_penetration)
@@ -12,7 +15,7 @@ def calc_damage (attack, multiplier, critical_chance, critical_damage, armor):
 
 def calc_dps (armor,champ,items,time):
     total_attack               = champ.attack + champ.attack_scaling * (champ.level - 1)
-    speed_multiplier           = 1 + champ.speed_scaling * (champ.level - 1)
+    speed_multiplier           = 1 + champ.speed_scaling * (champ.level - 1) + champ.speed_multiplier
     total_multiplier           = champ.multiplier
     total_critical_chance      = champ.critical_chance
     total_critical_damage      = champ.critical_damage
@@ -34,12 +37,10 @@ def calc_dps (armor,champ,items,time):
         if (item.short.lower() == "ie"): ie = 1
         if (item.short.lower() == "gb"): gb = 1
     
-    gb_time = 0
-    if ((gb == 1) and (time < 8)):
-        gb_time = time
-    else:
-        gb_time = 8
-    total_speed = champ.speed * (speed_multiplier + 0.5 * gb_time/time)
+    gb_stats    = get_item_time("gb", time)
+    champ_stats = get_champ_time(champ, time)
+    
+    total_speed = champ.speed * (speed_multiplier + (gb*gb_stats['time']*gb_stats['speed'] + champ_stats['time']*champ_stats['speed'])/time)
     n_attacks   = time*total_speed
     
     if (bc == 0):
@@ -82,12 +83,10 @@ def calc_dps_gold (armor,champ,items,time):
         if (item.short.lower() == "ie"): ie = 1
         if (item.short.lower() == "gb"): gb = 1
     
-    gb_time = 0
-    if ((gb == 1) and (time < 8)):
-        gb_time = time
-    else:
-        gb_time = 8
-    total_speed = champ.speed * (speed_multiplier + 0.5 * gb_time/time)
+    gb_stats    = get_item_time("gb", time)
+    champ_stats = get_champ_time(champ, time)
+    
+    total_speed = champ.speed * (speed_multiplier + (gb*gb_stats['time']*gb_stats['speed'] + champ_stats['time']*champ_stats['speed'])/time)
     n_attacks   = time*total_speed
     
     if (bc == 0):
@@ -103,3 +102,6 @@ def calc_dps_gold (armor,champ,items,time):
         dps = dps / time
             
     return dps/total_price
+
+
+    

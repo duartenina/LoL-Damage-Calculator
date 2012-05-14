@@ -1,8 +1,13 @@
-from calcs import *
-from funcs import *
 import matplotlib.pyplot as plt
 
+from code.calcs import *
+from code.champ import *
+from code.item  import *
+from code.extra import *
+
+
 graph_settings = ['k.', 'r.', 'g.', 'b.', 'm.', 'y.']
+
 
 def get_label (champ, items, time):
     label = champ.name + " at " + str(champ.level) + " with "
