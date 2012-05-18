@@ -78,6 +78,16 @@ def get_champ (name, champs):
     
     return champ
     
+def get_champion_list ():
+    all_champs = load_champs()
+    
+    champs = []
+    
+    for champ in all_champs:
+        champs.append(champ.name)
+    
+    return champs
+    
 def create_champ ():
     champ = champion(None)
     champ.name = "Custom"

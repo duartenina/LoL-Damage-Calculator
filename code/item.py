@@ -87,13 +87,16 @@ def get_item_list ():
     
     return item_list
     
-def get_item_time (item_name, run_time):
+def get_item_time (item_name, run_time, champ_type):
     time  = 0
     speed = 0
     
     if (item_name == 'gb'):
-        item_time  = 8
-        speed      = 0.5
+        if (champ_type.lower() == "melee"):
+            item_time = 8
+        else:
+            item_time = 4
+        speed = 0.5
     
     if (run_time < item_time):
         time = run_time
@@ -102,3 +105,22 @@ def get_item_time (item_name, run_time):
         
     return {'time': time, 'speed': speed}
     
+def get_item_attacks (item_name, n_attacks):
+    n     = 1
+    value = 0
+    
+    if (item_name == 'bc'):
+        value = 45
+    else:
+        return None
+    
+    if   (int(n_attacks) == 1):
+        value = 0
+    elif (int(n_attacks) == 2):
+        value /= 3
+    elif (n_attacks > 3):
+        n = n_attacks - 2 
+        
+    return {'n': n, 'value': value}    
+    
+   

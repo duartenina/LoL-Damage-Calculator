@@ -81,3 +81,7 @@ def draw_graph (champs, item_sets, times):
             make_dpspergold_armor_graph (armor, champs, item_sets, times)
         else:
             print "Incorrect option."
+
+if __name__ == '__main__':
+    main_menu()
+            

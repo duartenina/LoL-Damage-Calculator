@@ -18,20 +18,22 @@ def get_label (champ, items, time):
     
     return label
     
-def make_dps_armor_graph (armor_max, champs, items, times):
-    if ((len(items) != len(times)) or (len(champs) != len(items))):
-        return None
-
-    n_graphs = len(items)
-    if (n_graphs > 6): n_graphs = 6
-    
+def make_graph (graph_type, armor_max, builds):
     armor_range = range(armor_max)
+       
+    n = len(builds)
         
-    for i in xrange(n_graphs):
+    for i in xrange(n):
         dps = []
+        champ = builds[i]['champ']
+        items  = builds[i]['items']
+        time  = builds[i]['time']
+        
         for armor in armor_range:
-            dps.append(calc_dps(armor, champs[i], items[i], times[i]))
-        plt.plot(armor_range, dps, graph_settings[i], label = get_label(champs[i], items[i], times[i]))
+            temp = calc_dps(graph_type, armor, champ, items, time)
+            dps.append(temp)
+        
+        plt.plot(armor_range, dps, graph_settings[i], label = get_label(champ, items, time))
 
     plt.legend()
     plt.xlabel("Armor")
@@ -41,33 +43,7 @@ def make_dps_armor_graph (armor_max, champs, items, times):
     DefaultSize = fig.get_size_inches()
     fig.set_size_inches( (DefaultSize[0]*2, DefaultSize[1]*2) )
     
-    fig.savefig("graphs\dps_armor_graph.png")
-    fig.show()
-    wait()
-    
-def make_dpspergold_armor_graph (armor_max, champs, items, times):
-    if ((len(items) != len(times)) or (len(champs) != len(items))):
-        return None
-
-    n_graphs = len(items)
-    if (n_graphs > 6): n_graphs = 8
-    
-    armor_range = range(armor_max)
-        
-    for i in xrange(n_graphs):
-        dps = []
-        for armor in armor_range:
-            dps.append(calc_dps_gold(armor, champs[i], items[i], times[i]))
-        plt.plot(armor_range, dps, graph_settings[i], label = get_label(champs[i], items[i], times[i]))
-
-    plt.legend()
-    plt.xlabel("Armor")
-    plt.ylabel("DPS/gold")
-    
-    fig = plt.gcf()
-    DefaultSize = fig.get_size_inches()
-    fig.set_size_inches( (DefaultSize[0]*2, DefaultSize[1]*2) )
-    
-    fig.savefig("graphs\dpspergold_armor_graph.png")
-    fig.show()
-    wait()
+    #fig.savefig("graphs\dps_armor_graph.png")
+    plt.show()
+    #wait()
+ 
