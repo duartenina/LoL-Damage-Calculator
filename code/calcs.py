@@ -21,14 +21,14 @@ def calc_damage (attack, multiplier, critical_chance, critical_damage, armor):
     else:
         return (attack * multiplier * (1 + critical_chance * critical_damage) * (2 - 100 / (100 - armor)))
 
-def calc_dps (calc_type, armor,champ, items, time):
-    total_attack               = champ.attack + champ.attack_scaling * (champ.level - 1)
-    speed_multiplier           = 1 + champ.speed_scaling * (champ.level - 1)
-    total_multiplier           = champ.multiplier
-    total_critical_chance      = champ.critical_chance
-    total_critical_damage      = champ.critical_damage
-    total_flat_penetration     = champ.flat_penetration
-    total_percent_penetration  = champ.percent_penetration
+def calc_dps (calc_type, armor, champ, extra, items, time):
+    total_attack               = champ.attack + extra['attack'] + (champ.attack_scaling + extra['attack_scaling'])* (champ.level - 1)
+    speed_multiplier           = 1 + extra['speed'] + (champ.speed_scaling + extra['speed_scaling']) * (champ.level - 1)
+    total_multiplier           = champ.multiplier + extra['multiplier']
+    total_critical_chance      = champ.critical_chance + extra['critical_chance']
+    total_critical_damage      = champ.critical_damage + extra['critical_damage']
+    total_flat_penetration     = champ.flat_penetration + extra['flat_penetration']
+    total_percent_penetration  = champ.percent_penetration + extra['percent_penetration']
     total_flat_reduction       = 0
     total_percent_reduction    = 0
     

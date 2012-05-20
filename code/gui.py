@@ -75,13 +75,13 @@ class Prog (wx.Frame):
         self.choice_champ = wx.Choice(self.panel, new_id('choice_champ', 'champ', 'choice') , (10,10), (120, 25), get_champion_list())
         self.Bind(wx.EVT_CHOICE, self.pick_champ, self.choice_champ)
         
-        self.champ_objects = []
+        self.tc_champ_stats = []
         
         for i in xrange(10):
-            self.champ_objects.append(self.create_champ_objects())
+            self.tc_champ_stats.append(self.create_champ_objects())
             if (i != 9):
-                self.champ_objects[i]['custom'].Bind(wx.EVT_CHAR, self.key_press)
-                self.Bind(wx.EVT_TEXT, self.text_change, self.champ_objects[i]['custom'])
+                self.tc_champ_stats[i]['custom'].Bind(wx.EVT_CHAR, self.key_press)
+                self.Bind(wx.EVT_TEXT, self.text_change, self.tc_champ_stats[i]['custom'])
             
         wx.StaticText(self.panel, new_id('t_champ_level', 'champ', 'text'), "Level:",                       (150,15))
         self.tc_champ_level = wx.TextCtrl(self.panel, new_id('tc_champ_level', 'champ', 'textcontrol'), "0", (190,14), (40, 20))
@@ -231,7 +231,7 @@ class Prog (wx.Frame):
                  5: champ.flat_penetration, 6: champ.percent_penetration, 7: champ.critical_chance, 8: champ.critical_damage, 9: champ.type}
         
         for i in xrange(10):
-            self.champ_objects[i]['base'].SetValue(str(cobj[i]))
+            self.tc_champ_stats[i]['base'].SetValue(str(cobj[i]))
         
         self.tc_champ_level.SetValue(str(champ.level))
     
@@ -251,7 +251,7 @@ class Prog (wx.Frame):
         elif (keycode < 256):
             char = chr(keycode)
         
-        if   ((id >= ID['tc_champ_attack_damage_custom']) and (id < ID['tc_champ_critical_damage_custom'])):                                
+        if   ((id >= ID['tc_champ_attack_damage_custom']) and (id <= ID['tc_champ_critical_damage_custom'])):                                
             if (((keycode >= ord('0')) and (keycode <= ord('9'))) or (keycode == ord('.'))):
                 event.Skip()
         elif (id in [ID['tc_champ_level'], ID['tc_time'], ID['tc_armor']]):                                     
@@ -278,7 +278,7 @@ class Prog (wx.Frame):
         return False                    
 
     def build_add (self, event):
-        if (self.lb_builds.GetCount() < 6):
+        if (self.lb_builds.GetCount() < 5):
             build = self.get_build()
             self.lb_builds.Insert(build['name'], self.lb_builds.GetCount(), build['data'])
             print "Build added: %s" % (build['name'])
@@ -299,6 +299,14 @@ class Prog (wx.Frame):
         champ = get_champ(self.choice_champ.GetStringSelection())
         build_name += champ.name
         
+        stats = {0: 'attack', 1: 'attack_scaling', 2: 'speed', 3: 'speed_scaling', 4: 'multiplier',
+                5: 'flat_penetration', 6: 'percent_penetration', 7: 'critical_chance', 8: 'critical_damage'}
+        
+        extra = {}
+        
+        for i in xrange(9):
+            extra[stats[i]] = float(self.tc_champ_stats[i]['custom'].GetValue())
+        
         items = []
         n = 0
         for choice in self.choice_item:
@@ -316,7 +324,7 @@ class Prog (wx.Frame):
         time = int(self.tc_time.GetValue())
         build_name += "_" + str(time)
         
-        build = {'champ': champ, 'items': items, 'time': time}
+        build = {'champ': champ, 'extra': extra, 'items': items, 'time': time}
         
         return {'name': build_name, 'data': build}
         

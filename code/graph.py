@@ -26,11 +26,12 @@ def make_graph (graph_type, armor_max, builds, file):
     for i in xrange(n):
         dps = []
         champ = builds[i]['champ']
-        items  = builds[i]['items']
+        extra = builds[i]['extra']
+        items = builds[i]['items']
         time  = builds[i]['time']
         
         for armor in armor_range:
-            temp = calc_dps(graph_type, armor, champ, items, time)
+            temp = calc_dps(graph_type, armor, champ, extra, items, time)
             dps.append(temp)
         
         plt.plot(armor_range, dps, graph_settings[i], label = get_label(champ, items, time))
