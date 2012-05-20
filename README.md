@@ -4,8 +4,8 @@ LoL-Damage-Calculator
 A simple program to compare the DPS of several builds and champions.
 
 
-Libraries used:
--Matplotlib (http://matplotlib.sourceforge.net/)
+Libraries used:  
+-Matplotlib (http://matplotlib.sourceforge.net/)  
 -wxPython (http://wxpython.org/)
 
 
