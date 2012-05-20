@@ -18,7 +18,7 @@ def get_label (champ, items, time):
     
     return label
     
-def make_graph (graph_type, armor_max, builds):
+def make_graph (graph_type, armor_max, builds, file):
     armor_range = range(armor_max)
        
     n = len(builds)
@@ -43,7 +43,12 @@ def make_graph (graph_type, armor_max, builds):
     DefaultSize = fig.get_size_inches()
     fig.set_size_inches( (DefaultSize[0]*2, DefaultSize[1]*2) )
     
-    #fig.savefig("graphs\dps_armor_graph.png")
+    if file:
+        path = "graphs\\" + file + ".png"
+        fig.savefig(path)
+        print "Graph saved to %s." % (path)
+    
+    print "Graph drawn: %s" % (graph_type)
     plt.show()
     #wait()
  

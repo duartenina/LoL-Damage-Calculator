@@ -1,6 +1,5 @@
 import sys, os
 
-from code.calcs import *
 from code.champ import *
 from code.graph import *
 from code.item  import *
@@ -28,9 +27,6 @@ def main_menu ():
     item_sets = []
     times     = []
     
-    all_champs = load_champs()
-    all_items  = load_items()
-    
     print "\n******League of Legends Damage Calculator******\n"
     
     while 1:
@@ -48,7 +44,7 @@ def main_menu ():
       
     for i in xrange(n_builds):
         print "Build number %d of %d" % (i+1, n_builds)
-        champs.append(get_champ(None, all_champs))
+        champs.append(get_champ(None))
         champs[i] = change_champ(champs[i])
         print ""
         item_sets.append(create_item_set())

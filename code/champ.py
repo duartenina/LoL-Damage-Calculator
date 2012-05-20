@@ -59,7 +59,7 @@ def load_champs ():
         
     return champs
     
-def get_champ (name, champs):
+def get_champ (name, champs=load_champs()):
     champ = None
     
     while not champ:
@@ -75,6 +75,7 @@ def get_champ (name, champs):
         
         if (champ == None):
             print "Champion not found.\n"
+            name = None
     
     return champ
     
@@ -91,7 +92,6 @@ def get_champion_list ():
 def create_champ ():
     champ = champion(None)
     champ.name = "Custom"
-    champs = load_champs()
     
     for arg in sys.argv:
         if (arg.isdigit()):
@@ -101,13 +101,13 @@ def create_champ ():
             if (temp > 18):
                 temp = 18
             champ.level = temp
-        elif (get_champ(arg, champs)):
-            temp = get_champ(arg, champs)
+        elif (get_champ(arg)):
+            temp = get_champ(arg)
             champ.copy_champ(temp)
             champ.name += " " + temp.name
             
     if (champ.name == "Custom"):
-        temp = get_champ("Ashe", champs)
+        temp = get_champ("Ashe")
         champ.copy_champ(temp)
         champ.name += " " + temp.name
         

@@ -66,6 +66,3 @@ def calc_dps (calc_type, armor,champ, items, time):
         return dps
     elif (calc_type == 'dpspergold'):
         return dps/total_price
-
-
-    

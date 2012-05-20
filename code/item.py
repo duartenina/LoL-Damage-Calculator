@@ -36,7 +36,7 @@ def load_items ():
         items.append(item(t))
     return items            
     
-def get_item (name, items):
+def get_item (name, items=load_items()):
     for item in items:
         if ((item.name.lower() == name.lower()) or (item.short.lower() == name.lower())):
             return item
@@ -44,7 +44,6 @@ def get_item (name, items):
     return None
     
 def create_item_set ():
-    all_items = load_items()
     items = []
     exit = 0
     
@@ -56,7 +55,7 @@ def create_item_set ():
             if (item_name.lower() == "end"):
                 exit = 1
                 break
-            item = get_item(item_name, all_items)
+            item = get_item(item_name)
         if (exit == 1):
             break
         items.append(item)
@@ -64,16 +63,15 @@ def create_item_set ():
     return items
     
 def create_fixed_item_set (opt):
-    all_items = load_items()
     items = []
     
-    items.append(get_item("InfinityEdge", all_items))
-    items.append(get_item("InfinityEdge", all_items))
-    items.append(get_item("PhantomDancer", all_items))
-    if ((opt != 3) and (opt != 5)): items.append(get_item("Bloodthirster", all_items))
-    if ((opt == 1) or (opt == 3) or (opt == 5)): items.append(get_item("BlackCleaver", all_items))
-    if ((opt == 2) or (opt == 3)): items.append(get_item("LastWhisper", all_items))
-    if ((opt == 4) or (opt == 5)): items.append(get_item("GhostBlade", all_items))
+    items.append(get_item("InfinityEdge"))
+    items.append(get_item("InfinityEdge"))
+    items.append(get_item("PhantomDancer"))
+    if ((opt != 3) and (opt != 5)): items.append(get_item("Bloodthirster"))
+    if ((opt == 1) or (opt == 3) or (opt == 5)): items.append(get_item("BlackCleaver"))
+    if ((opt == 2) or (opt == 3)): items.append(get_item("LastWhisper"))
+    if ((opt == 4) or (opt == 5)): items.append(get_item("GhostBlade"))
         
     return items    
 
