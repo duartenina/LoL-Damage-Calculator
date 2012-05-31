@@ -51,6 +51,23 @@ class champion:
         print "Damage multiplier ('DM') = %f" % (self.multiplier)
         print "Type: %s\n" % (self.type)
 
+    def __getitem__ (self, prop):
+        return self.__dict__[prop]
+        
+    def __setitem__ (self, prop, value):
+        self.__dict__[prop] = value
+    
+    def stats (self):
+        return ('name', 'level', 'attack', 'attack_scaling', 'speed', 'speed_multiplier', 'speed_scaling', 'flat_penetration', 'percent_penetration', 'critical_chance', 'critical_damage', 'multiplier', 'type')
+            
+    def dict (self):
+        dict = {}
+        
+        for stat in self.stats():
+            dict[stat] = self[stat]
+        
+        return dict            
+        
 def load_champs ():
     temp = csv.reader(open('champ.dat'))
     champs = []

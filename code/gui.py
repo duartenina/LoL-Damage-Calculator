@@ -94,7 +94,6 @@ class Prog (wx.Frame):
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_time)
         
         self.choice_champ.SetSelection(0)
-        self.pick_champ(None)
         
         #************************* Items (IDs 3xxx) *************************#
         
@@ -126,18 +125,29 @@ class Prog (wx.Frame):
         self.tc_armor.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_armor)
         
-        button = wx.Button(self.panel, new_id('b_graphs_dps', 'graphs', 'button'), "DPS",          (600, 130), button_size['big'])
+        button = wx.Button(self.panel, new_id('b_graphs_dps', 'graphs', 'button'), "DPS",                               (600, 130), button_size['big'])
         self.Bind(wx.EVT_BUTTON, self.click, button)
         
-        button = wx.Button(self.panel, new_id('b_graphs_dpsgold', 'graphs', 'button'), "DPS/gold", (600, 180), button_size['big'])
+        button = wx.Button(self.panel, new_id('b_graphs_dpsgold', 'graphs', 'button'), "DPS/gold",                      (600, 180), button_size['big'])
         self.Bind(wx.EVT_BUTTON, self.click, button)
         
-        self.cb_file = wx.CheckBox(self.panel, new_id('cb_file', 'graphs', 'checkbox'), "Save to file", (600, 230))
+        button = wx.Button(self.panel, new_id('b_graphs_dps_optimal', 'graphs', 'button'), "Optimal DPS",               (600, 230), button_size['big'])
+        self.Bind(wx.EVT_BUTTON, self.click, button)
+        
+        button = wx.Button(self.panel, new_id('b_graphs_dpsgold_optimal', 'graphs', 'button'), "Optimal DPS/gold",      (600, 280), button_size['big'])
+        self.Bind(wx.EVT_BUTTON, self.click, button)
+        
+        self.tc_armor_val = wx.TextCtrl(self.panel, new_id('tc_armor_var', 'graphs', 'textcontrol'), "",                (615,64), (40, 20), style = wx.TE_READONLY)
+        
+        self.cb_file = wx.CheckBox(self.panel, new_id('cb_file', 'graphs', 'checkbox'), "Save to file", (600, 330))
         #wx.StaticText(self.panel, new_id('t_file', 'graphs', 'text'), "File name:",                     (600, 250))
-        self.tc_file = wx.TextCtrl(self.panel, new_id('tc_file', 'graphs', 'textcontrol'), "graph",     (600, 250), (150, 20))
+        self.tc_file = wx.TextCtrl(self.panel, new_id('tc_file', 'graphs', 'textcontrol'), "graph",     (600, 350), (150, 20))
         self.tc_file.SetMaxLength(20)
         self.tc_file.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_file)
+        
+        #************************* Defaults *************************#
+        self.pick_champ(None)
         
     def create_champ_objects (self):
         id_base = ID_location['champ'] + ID_type['textcontrol']
@@ -198,16 +208,22 @@ class Prog (wx.Frame):
     #************************* Event Functions *************************#
         
     def click (self, event):
-        if   (event.GetId() == ID['b_builds_add']):                 #"Add [Build]" Button
+        id = event.GetId()
+        
+        if   (id == ID['b_builds_add']):                 #"Add [Build]" Button
             self.build_add (event)
-        elif (event.GetId() == ID['b_builds_remove']):              #"Remove [Build]" Button
+        elif (id == ID['b_builds_remove']):              #"Remove [Build]" Button
             self.build_remove (event)
-        elif (event.GetId() == ID['b_builds_clear']):               #"Clear" Button
+        elif (id == ID['b_builds_clear']):               #"Clear" Button
             self.build_clear (event)
-        elif (event.GetId() == ID['b_graphs_dps']):                 #"DPS" Button
+        elif (id == ID['b_graphs_dps']):                 #"DPS" Button
             self.graph ('dps', event)
-        elif (event.GetId() == ID['b_graphs_dpsgold']):             #"DPS/gold" Button
+        elif (id == ID['b_graphs_dpsgold']):             #"DPS/gold" Button
             self.graph ('dpspergold', event)           
+        elif (id == ID['b_graphs_dps_optimal']):                 #"DPS" Button
+            self.calc_optimal_builds ('dps', event)
+        elif (id == ID['b_graphs_dpsgold_optimal']):             #"DPS/gold" Button
+            self.calc_optimal_builds ('dpspergold', event)
     
     def text_change (self, event):
         id = event.GetId()
@@ -227,20 +243,37 @@ class Prog (wx.Frame):
         champ = get_champ(self.choice_champ.GetStringSelection())
         print "Champion chosen: %s" % (champ.name)
         
-        cobj =  {0: champ.attack, 1: champ.attack_scaling, 2: champ.speed, 3: champ.speed_scaling, 4: champ.multiplier,                                    #index of champ_objects
-                 5: champ.flat_penetration, 6: champ.percent_penetration, 7: champ.critical_chance, 8: champ.critical_damage, 9: champ.type}
-        
-        for i in xrange(10):
-            self.tc_champ_stats[i]['base'].SetValue(str(cobj[i]))
-        
+        self.update_stats()
+        self.tc_champ_stats[9]['base'] = champ.type
         self.tc_champ_level.SetValue(str(champ.level))
     
     def pick_item (self, event):
         item_name = event.GetString()
         event_id  = event.GetId()
         
+        self.update_stats()
+        
         print "Item chosen: %s" % (item_name)
     
+    def update_stats (self):
+        stats = {0: 'attack', 1: 'attack_scaling', 2: 'speed', 3: 'speed_scaling', 4: 'multiplier',
+                5: 'flat_penetration', 6: 'percent_penetration', 7: 'critical_chance', 8: 'critical_damage'}
+        
+        items = []
+        for choice in self.choice_item:
+            item_name = choice.GetStringSelection()
+            if (item_name != "None"):
+                item = get_item(item_name)
+                items.append(item)
+
+        for stat in stats:
+            value = float(get_champ(self.choice_champ.GetStringSelection())[stats[stat]])
+            for item in items:
+                if (item[stats[stat]]):
+                    value += item[stats[stat]]
+            
+            self.tc_champ_stats[stat]['base'].SetValue(str(value))
+        
     def tc_validate_key (self, event):
         id      = event.GetId()
         keycode = event.GetKeyCode()
@@ -319,7 +352,7 @@ class Prog (wx.Frame):
                 else:
                     build_name += "+"
                 build_name += item.short
-            n += 1
+                n += 1
         
         time = int(self.tc_time.GetValue())
         build_name += "_" + str(time)
@@ -331,6 +364,15 @@ class Prog (wx.Frame):
     def graph (self, type, event):
         lb = self.lb_builds
         n  = lb.GetCount()
+        
+        armor = int(self.tc_armor.GetValue())
+        
+        if (self.cb_file.GetValue()):
+            file = self.tc_file.GetValue()
+            if (file == ""):
+                file = "graph"
+        else:
+            file = None
         
         if (n == 0):
             message = wx.MessageBox('Not enough builds to graph.', 'Error', wx.OK | wx.ICON_ERROR)
@@ -346,9 +388,12 @@ class Prog (wx.Frame):
                 if (builds[i]['items'] == []):
                     message = wx.MessageBox('Impossible to graph DPS/gold with no items.', 'Error', wx.OK | wx.ICON_ERROR)
                     return None
-                
         
-        armor = int(self.tc_armor.GetValue())
+        make_graph (type, armor, builds, file)
+        
+    def calc_optimal_builds (self, type, event, n_items=4):
+        armor_max = int(self.tc_armor.GetValue())
+        armor_range = range(armor_max)
         
         if (self.cb_file.GetValue()):
             file = self.tc_file.GetValue()
@@ -357,8 +402,48 @@ class Prog (wx.Frame):
         else:
             file = None
         
-        make_graph (type, armor, builds, file)
+        build = self.get_build()['data']
+        champ = build['champ']
+        extra = build['extra']
+        time  = build['time']
         
+        all_labels = []
+        builds     = []
+        
+        n = 0
+        self.lb_builds.Clear()
+        for armor in armor_range:
+            self.tc_armor_val.SetValue(str(armor))
+            old_dps = 0
+            optimal_items = []
+            
+            champ_dps = calc_dps(armor, champ, extra, [], time)
+            
+            for items in comb_rep (load_items(), n_items):
+                dps = calc_dps(armor, champ, extra, items, time)
+                if (type == 'dpspergold'):
+                    total_price = 0
+                    for item in items:
+                        total_price += item.price
+                    if (total_price == 0):
+                        continue
+                    dps -= champ_dps
+                    dps /= total_price
+                if (dps > old_dps):
+                    optimal_items = items
+                    old_dps = dps
+            
+            new_label = get_label(champ, optimal_items, time)
+            
+            if not (new_label in all_labels):
+                build = {'champ': champ, 'extra': extra, 'items': optimal_items, 'time': time}
+                builds.append(build)
+                self.lb_builds.Insert(new_label, n, build)
+                all_labels.append(new_label)
+                n += 1
+                if (n > 8): break
+        
+        #make_graph (type, armor_max, builds, file)
 
 #Class end
 

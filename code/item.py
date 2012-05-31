@@ -27,8 +27,24 @@ class item:
             self.multiplier = float(item_data[7])
             self.price = float(item_data[8])
             self.short = item_data[9]
+
+    def __getitem__ (self, prop):
+        return self.__dict__[prop]
+        
+    def __setitem__ (self, prop, value):
+        self.__dict__[prop] = value
+    
+    def stats (self):
+        return ('name', 'attack', 'speed', 'flat_penetration', 'percent_penetration', 'critical_chance', 'critical_damage', 'multiplier', 'price', 'short')
             
-            
+    def dict (self):
+        dict = {}
+        
+        for stat in self.stats():
+            dict[stat] = self[stat]
+        
+        return dict
+
 def load_items ():
     temp = csv.reader(open('item.dat'))
     items = []
@@ -51,7 +67,7 @@ def create_item_set ():
     for i in xrange(5):
         item = None
         while not item:
-            item_name = raw_input("Item %d of 5: " % (i+1))
+            item_name = raw_input("Item %d of " % (i+1))
             if (item_name.lower() == "end"):
                 exit = 1
                 break
