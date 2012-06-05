@@ -16,6 +16,9 @@ class item:
             self.multiplier = 0
             self.price = 0
             self.short = "N"
+            self.tier = 0
+            self.combine = ""
+            self.combine_cost = 0
         else:
             self.name = item_data[0]
             self.attack = float(item_data[1])
@@ -25,8 +28,11 @@ class item:
             self.critical_chance = float(item_data[5])
             self.critical_damage = float(item_data[6])
             self.multiplier = float(item_data[7])
-            self.price = float(item_data[8])
+            self.price = int(item_data[8])
             self.short = item_data[9]
+            self.tier = int(item_data[10])
+            self.combine = item_data[11]
+            self.combine_cost = int(item_data[12])
 
     def __getitem__ (self, prop):
         return self.__dict__[prop]
