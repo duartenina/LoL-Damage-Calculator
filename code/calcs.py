@@ -36,7 +36,7 @@ def calc_dps (armor, champ, extra, items, time):
     total_critical_chance      = champ.critical_chance + extra['critical_chance']
     total_critical_damage      = champ.critical_damage + extra['critical_damage']
     total_flat_penetration     = champ.flat_penetration + extra['flat_penetration']
-    total_percent_penetration  = champ.percent_penetration + extra['percent_penetration']
+    total_percent_penetration  = (1 - champ.percent_penetration) * (1 - extra['percent_penetration'])
     total_flat_reduction       = 0
     total_percent_reduction    = 0
     
@@ -50,7 +50,7 @@ def calc_dps (armor, champ, extra, items, time):
         speed_multiplier           += item.speed
         total_critical_chance      += item.critical_chance
         total_flat_penetration     += item.flat_penetration
-        if (lw == 0): total_percent_penetration  += item.percent_penetration
+        if (lw == 0): total_percent_penetration  = 1 - total_percent_penetration * (1 - item.percent_penetration)
         if (ie == 0): total_critical_damage += item.critical_damage
         if (item.short.lower() == "bc"): bc = 1
         if (item.short.lower() == "ie"): ie = 1
@@ -58,14 +58,16 @@ def calc_dps (armor, champ, extra, items, time):
         if (item.short.lower() == "lw"): lw = 1
         #print item.short
     
+    
     gb_stats    = get_item_time("gb", time, champ.type)
     champ_stats = get_champ_time(champ, time)
     
     total_speed = champ.speed * (speed_multiplier + (gb*gb_stats['time']*gb_stats['speed'] + champ_stats['time']*champ_stats['speed'])/time)
+    if (total_speed > 2.5): total_speed = 2.5
+    
     n_attacks   = time*total_speed
     
     bc_stats    = get_item_attacks("bc", n_attacks)
-    
     total_flat_reduction += bc*bc_stats['n']*bc_stats['value']/n_attacks
     
     total_armor = reduced_armor(armor, total_flat_penetration, total_percent_penetration, total_flat_reduction, total_percent_reduction)

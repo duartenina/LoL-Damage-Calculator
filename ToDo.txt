@@ -1,0 +1,23 @@
+*COMMENT!!  
+
+*Optimize the calc of the optimal build  
+  +Update Choices and/or Armor while calculating  
+  +Add option of calculation for armor X only  
+  +Add tiers  
+  +Add budget (minimum and maximum)  
+
+*Add "What's the best stat now?" (half-thought idea)  
+  +Start with a build  
+  +Add 1% AD/AS/ArP/etc  
+  +Calculate the new DPS and compare the % change  
+  +Compare the diferent increases   
+  +graph versus armor?  
+
+*Add automagically updated boxes with Minimum (armor = max), Average (armor = max/2) and Maximum DPS (armor = 0)  
+
+*Add "Best build path"   
+  +Start with end items  
+  +Calculate the item path that keeps the highest DPS throught the game  
+  +Options:  
+    »Number of slots  
+    »Highest DPS or DPS/gold
