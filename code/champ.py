@@ -3,8 +3,10 @@ from math import *
 
 from code.extra import *
 
-
 class champion:
+    """
+    Champion Class
+    """
     def __init__ (self, champ_data):
         if (champ_data == None):
             self.name = ""
@@ -42,7 +44,7 @@ class champion:
         self.speed_scaling = champ.speed_scaling
         self.type = champ.type
         
-    def show_stats (self):
+    def show_stats (self):                #Prints all champ stats
         print "\n%s at level ('lvl') %d" % (self.name, self.level)
         print "Attack Damage ('AD', 'ADlvl') = %f + %f per level" % (self.attack, self.attack_scaling)
         print "Attack Speed ('AS', 'ASlvl', 'ASm') = %f * (1 + %f per level + %f)" % (self.speed, self.speed_scaling, self.speed_multiplier)
@@ -51,16 +53,22 @@ class champion:
         print "Damage multiplier ('DM') = %f" % (self.multiplier)
         print "Type: %s\n" % (self.type)
 
-    def __getitem__ (self, prop):
-        return self.__dict__[prop]
+    def __getitem__ (self, prop):               #Returns champ[prop]
+        try: 
+            return self.__dict__[prop]
+        except KeyError:
+            return 0
         
-    def __setitem__ (self, prop, value):
-        self.__dict__[prop] = value
-    
-    def stats (self):
+    def __setitem__ (self, prop, value):        #Applies champ[prop] = value
+        try: 
+            self.__dict__[prop] = value
+        except KeyError:
+            return None
+        
+    def stats (self):                           #Returns tuple with all possible champ stats
         return ('name', 'level', 'attack', 'attack_scaling', 'speed', 'speed_multiplier', 'speed_scaling', 'flat_penetration', 'percent_penetration', 'critical_chance', 'critical_damage', 'multiplier', 'type')
             
-    def dict (self):
+    def dict (self):                            #Returns dict with champs stats: {'name': Ashe, 'level': 13, etc}
         dict = {}
         
         for stat in self.stats():
@@ -68,15 +76,24 @@ class champion:
         
         return dict            
         
-def load_champs ():
-    temp = csv.reader(open('champ.dat'))
+def load_champs (file='champ.dat'):
+    """
+    Loads all champs from file and returns list of champion class instances (default file 'champ.dat')
+    """
+    
+    temp = csv.reader(open(file))
     champs = []
     for t in temp:
         champs.append(champion(t))
         
     return champs
     
-def get_champ (name, champs=load_champs()):
+def get_champ (name=None, champs=load_champs()):
+    """
+    Returns champ with name 'name' from list 'champs' (default all champions in champ.dat)
+    If name == None, it will ask for name in terminal
+    """
+    
     champ = None
     
     while not champ:
@@ -96,8 +113,10 @@ def get_champ (name, champs=load_champs()):
     
     return champ
     
-def get_champion_list ():
-    all_champs = load_champs()
+def get_champion_list (all_champs=load_champs()):
+    """
+    Returns list of champion names from list of champion class instances (default all champions in champ.dat)
+    """
     
     champs = []
     
@@ -107,6 +126,12 @@ def get_champion_list ():
     return champs
     
 def create_champ ():
+    """
+    Creates champ from arguments
+    
+    Deprecated
+    """
+    
     champ = champion(None)
     champ.name = "Custom"
     
@@ -131,6 +156,12 @@ def create_champ ():
     return champ       
     
 def change_champ (champ):
+    """
+    Changes champ stats in terminal
+    
+    Deprecated
+    """
+
     while 1:
         champ.show_stats()
         option = raw_input("What stat do you want to change ('End' to finish)\n").strip().lower()
@@ -198,19 +229,23 @@ def change_champ (champ):
             print "Stat not found."
     return champ    
 
-def get_champ_time (champ, run_time):
+def get_champ_time (champ, level, run_time):
+    """
+    Calculates the Attack Speed boost from abilities and returns dict {'time': time, 'speed': speed}, where time is how much time the ability is on and speed is the value of the boost
+    """
+
     time       = 0
     skill_time = 0
     speed      = 0
     
     if   (champ.name.lower() == 'tristana'):
         skill_time = 7
-        speed = min((champ.level+1)/2, 5)
+        speed = min((level+1)/2, 5)
         ranks = {1: .3, 2: .45, 3: .6, 4: .75, 5: .9}
         speed = ranks[speed]
     elif (champ.name.lower() == 'missfortune'):
         skill_time = 6
-        speed = min((champ.level+1)/2, 5)
+        speed = min((level+1)/2, 5)
         ranks = {1: .3, 2: .35, 3: .4, 4: .45, 5: .5}
         speed = ranks[speed]
 

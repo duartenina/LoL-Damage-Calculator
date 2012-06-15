@@ -1,19 +1,18 @@
-*COMMENT!!  
+*COMMENT!
+
+*BugFixes:
+
+*Replace simple Armor to Armor Range (min and max)
 
 *Optimize the calc of the optimal build  
-  +Update Choices and/or Armor while calculating  
-  +Add option of calculation for armor X only  
-  +Add tiers  
-  +Add budget (minimum and maximum)  
-
+  +OPTIMIZE, OPTIMIZE, OPTIMIZE
+  
 *Add "What's the best stat now?" (half-thought idea)  
   +Start with a build  
   +Add 1% AD/AS/ArP/etc  
   +Calculate the new DPS and compare the % change  
   +Compare the diferent increases   
   +graph versus armor?  
-
-*Add automagically updated boxes with Minimum (armor = max), Average (armor = max/2) and Maximum DPS (armor = 0)  
 
 *Add "Best build path"   
   +Start with end items  

@@ -2,8 +2,10 @@ import csv
 
 from code.extra import *
 
-
 class item:
+    """
+    Class Item
+    """
     def __init__ (self, item_data):
         if (item_data == None):
             self.name = "None"
@@ -16,7 +18,7 @@ class item:
             self.multiplier = 0
             self.price = 0
             self.short = "N"
-            self.tier = 0
+            self.tier = "None"
             self.combine = ""
             self.combine_cost = 0
         else:
@@ -30,20 +32,26 @@ class item:
             self.multiplier = float(item_data[7])
             self.price = int(item_data[8])
             self.short = item_data[9]
-            self.tier = int(item_data[10])
+            self.tier = item_data[10]
             self.combine = item_data[11]
             self.combine_cost = int(item_data[12])
 
-    def __getitem__ (self, prop):
-        return self.__dict__[prop]
+    def __getitem__ (self, prop):               #Returns item[prop]
+        try: 
+            return self.__dict__[prop]
+        except KeyError:
+            return 0
         
-    def __setitem__ (self, prop, value):
-        self.__dict__[prop] = value
+    def __setitem__ (self, prop, value):        #Applies item[prop] = value
+        try: 
+            self.__dict__[prop] = value
+        except KeyError:
+            return None
     
-    def stats (self):
-        return ('name', 'attack', 'speed', 'flat_penetration', 'percent_penetration', 'critical_chance', 'critical_damage', 'multiplier', 'price', 'short')
+    def stats (self):                           #Returns tuple with all possible item stats
+        return ('name', 'attack', 'speed', 'flat_penetration', 'percent_penetration', 'critical_chance', 'critical_damage', 'multiplier', 'price', 'short', 'tier', 'combine', 'combine_cost')
             
-    def dict (self):
+    def dict (self):                            #Returns dict with item stats: {'name': InfinityEdge, 'attack': 80, etc}
         dict = {}
         
         for stat in self.stats():
@@ -51,14 +59,31 @@ class item:
         
         return dict
 
-def load_items ():
-    temp = csv.reader(open('item.dat'))
+def load_items (file='item.dat'):
+    """
+    Loads all items from file and returns list of item class instances (default file 'item.dat')
+    """
+
+    temp = csv.reader(open(file))
     items = []
     for t in temp:
         items.append(item(t))
     return items            
     
+def filter_items_tiers (tiers={'None': 1, 'Basic': 1, 'Advanced': 1, 'Legendary': 1}, items=load_items()):
+    new_items = []
+    
+    for item in items:
+        if tiers[item.tier]:
+            new_items.append(item)
+        
+    return new_items
+    
 def get_item (name, items=load_items()):
+    """
+    Returns item with name or short 'name' from list 'items' (default all items in item.dat)
+    """
+    
     for item in items:
         if ((item.name.lower() == name.lower()) or (item.short.lower() == name.lower())):
             return item
@@ -66,6 +91,12 @@ def get_item (name, items=load_items()):
     return None
     
 def create_item_set ():
+    """
+    Creates a item set in the terminal
+    
+    Deprecated
+    """
+    
     items = []
     exit = 0
     
@@ -85,6 +116,12 @@ def create_item_set ():
     return items
     
 def create_fixed_item_set (opt):
+    """
+    Creates a fixed item set chosen from an opt
+    
+    Deprecated
+    """
+
     items = []
     
     items.append(get_item("InfinityEdge"))
@@ -97,8 +134,10 @@ def create_fixed_item_set (opt):
         
     return items    
 
-def get_item_list ():
-    all_items = load_items()
+def get_item_list (all_items=load_items()):
+    """
+    Returns list of item names from list of item class instances (default all items in item.dat)
+    """
     
     item_list = []
     
@@ -108,6 +147,11 @@ def get_item_list ():
     return item_list
     
 def get_item_time (item_name, run_time, champ_type):
+    """
+    Calculates the Attack Speed boost from items' actives and returns dict {'time': time, 'speed': speed},
+     where time is how much time the item active is on and speed is the value of the boost
+    """
+
     time  = 0
     speed = 0
     
@@ -126,6 +170,11 @@ def get_item_time (item_name, run_time, champ_type):
     return {'time': time, 'speed': speed}
     
 def get_item_attacks (item_name, n_attacks):
+    """
+    Calculates the boost from items and returns dict {'n': n, 'value': value},
+     where n is the number of attacks where the boost works and value is the value of the boost
+    """
+
     n     = 1
     value = 0
     

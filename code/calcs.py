@@ -2,8 +2,10 @@ from code.champ import *
 from code.item  import *
 from code.extra import *
 
-
 def reduced_armor (armor, flat_penetration, percent_penetration, flat_reduction, percent_reduction):
+    """
+    Returns the new armor after reductions and penetrations are applied.
+    """
     
     total_armor = armor - flat_reduction
     if (total_armor) < 0:
@@ -16,12 +18,20 @@ def reduced_armor (armor, flat_penetration, percent_penetration, flat_reduction,
     return total_armor
     
 def calc_damage (attack, multiplier, critical_chance, critical_damage, armor):
+    """
+    Returns damage from one attack
+    """
+
     if (armor >= 0):
         return (attack * multiplier * (1 + critical_chance * critical_damage) * (100. / (100. + armor)))
     else:
         return (attack * multiplier * (1 + critical_chance * critical_damage) * (2. - 100. / (100. - armor)))
 
 def calc_dps (armor, champ, extra, items, time):
+    """
+    Returns the dps of a certain build
+    """
+
     stats = {0: 'attack', 1: 'attack_scaling', 2: 'speed', 3: 'speed_scaling', 4: 'multiplier',
                 5: 'flat_penetration', 6: 'percent_penetration', 7: 'critical_chance', 8: 'critical_damage'}
                 
@@ -30,8 +40,8 @@ def calc_dps (armor, champ, extra, items, time):
         for stat in stats:
             extra[stats[stat]] = 0
     
-    total_attack               = champ.attack + extra['attack'] + (champ.attack_scaling + extra['attack_scaling']) * (champ.level - 1)
-    speed_multiplier           = 1 + extra['speed'] + (champ.speed_scaling + extra['speed_scaling']) * (champ.level - 1)
+    total_attack               = champ.attack + extra['attack'] + (champ.attack_scaling + extra['attack_scaling']) * (extra['level'] - 1)
+    speed_multiplier           = 1 + extra['speed'] + (champ.speed_scaling + extra['speed_scaling']) * (extra['level'] - 1)
     total_multiplier           = champ.multiplier + extra['multiplier']
     total_critical_chance      = champ.critical_chance + extra['critical_chance']
     total_critical_damage      = champ.critical_damage + extra['critical_damage']
@@ -41,34 +51,42 @@ def calc_dps (armor, champ, extra, items, time):
     total_percent_reduction    = 0
     
     dps = 0
+    b  = 0
     bc = 0
-    ie = 0
     gb = 0
+    ie = 0
     lw = 0
+    
     for item in items:
         total_attack               += item.attack
         speed_multiplier           += item.speed
         total_critical_chance      += item.critical_chance
-        total_flat_penetration     += item.flat_penetration
-        if (lw == 0): total_percent_penetration  = 1 - total_percent_penetration * (1 - item.percent_penetration)
-        if (ie == 0): total_critical_damage += item.critical_damage
+        if ((item.short.lower() == "b")  and (b  == 0)) or ((item.short.lower() == "gb") and (gb == 0)):
+            total_flat_penetration += item.flat_penetration
+        if (lw == 0):
+            total_percent_penetration  = total_percent_penetration * (1 - item.percent_penetration)
+        if (ie == 0):
+            total_critical_damage += item.critical_damage
+        if (item.short.lower() == "b"):  b  = 1
         if (item.short.lower() == "bc"): bc = 1
         if (item.short.lower() == "ie"): ie = 1
         if (item.short.lower() == "gb"): gb = 1
         if (item.short.lower() == "lw"): lw = 1
-        #print item.short
+        if (DEBUG): print item.short 
     
-    
+    if (total_critical_chance > 1): total_critical_chance = 1
+    total_percent_penetration  = 1 - total_percent_penetration
+        
     gb_stats    = get_item_time("gb", time, champ.type)
-    champ_stats = get_champ_time(champ, time)
+    champ_stats = get_champ_time(champ, extra['level'], time)
     
-    total_speed = champ.speed * (speed_multiplier + (gb*gb_stats['time']*gb_stats['speed'] + champ_stats['time']*champ_stats['speed'])/time)
+    total_speed = champ.speed * (speed_multiplier + (gb*gb_stats['time']*gb_stats['speed'] + champ_stats['time']*champ_stats['speed'])/time)    #Average Attack Speed from boosts
     if (total_speed > 2.5): total_speed = 2.5
     
     n_attacks   = time*total_speed
     
     bc_stats    = get_item_attacks("bc", n_attacks)
-    total_flat_reduction += bc*bc_stats['n']*bc_stats['value']/n_attacks
+    total_flat_reduction += bc*bc_stats['n']*bc_stats['value']/n_attacks   #Average Armor Reduction from boosts
     
     total_armor = reduced_armor(armor, total_flat_penetration, total_percent_penetration, total_flat_reduction, total_percent_reduction)
     dps = calc_damage(total_attack, total_multiplier, total_critical_chance, total_critical_damage, total_armor) * total_speed

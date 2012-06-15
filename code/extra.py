@@ -1,19 +1,23 @@
 from itertools import combinations_with_replacement
+from time import sleep
+import sys
 
-def error(issue):
+#Debug option
+DEBUG = 0
+
+def error(issue):                #Simple error function
     sys.stderr.write("There is a problem with the %s.\n" % (issue))
     sys.exit()
     
-def wait ():
-    print "Press Enter to continue."
-    raw_input()
+def wait ():                     #Pause function
+    raw_input("Press Enter to continue.")
     
-def is_number(number):
+def is_number(number):           #Check if a number is a float or not (similar to isdigit())
     try:
         float(number)
         return True
     except ValueError:
         return False    
 
-def comb_rep (iter, n):         #because I'm lazy
+def comb_rep (iter, n):          #because I'm lazy
     return combinations_with_replacement(iter, n)

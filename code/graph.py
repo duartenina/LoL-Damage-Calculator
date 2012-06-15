@@ -5,11 +5,15 @@ from code.champ import *
 from code.item  import *
 from code.extra import *
 
-
+#Settings for the different curves of the graph
 graph_settings = ['k.', 'r.', 'g.', 'b.', 'm.', 'y.', 'c.', 'w.']
 
-def get_label (champ, items, time):
-    label = champ.name
+def get_label (champ, level, items, time):
+    """
+    Returns label (text) with the champion name, the short names of the items and time of attack
+    """
+    
+    label = champ.name + "_l=" + str(level)
     n = 0
     for item in items:
         if (n == 0):
@@ -17,11 +21,15 @@ def get_label (champ, items, time):
         else:
             label += "+" + item.short 
     
-    label += "_" + str(time)
+    label += "_t=" + str(time)
     
     return label
     
 def make_graph (graph_type, armor_max, builds, file):
+    """
+    Creates and shows graph of type 'graph_type', with builds 'builds' and saves it to 'file' (optional)
+    """
+    
     armor_range = range(armor_max)
        
     n = len(builds)
@@ -40,11 +48,12 @@ def make_graph (graph_type, armor_max, builds, file):
                 for item in items:
                     total_price += item.price
                 temp -= calc_dps(armor, champ, extra, [], time)
-                temp /= total_price
+                temp /= total_price/1000
             dps.append(temp)
         
-        plt.plot(armor_range, dps, graph_settings[i], label = get_label(champ, items, time))
-
+        #plt.plot(armor_range, dps, graph_settings[i], label = get_label(champ, items, time))
+        plt.plot(armor_range, dps, label = get_label(champ, extra['level'], items, time))
+        
     plt.legend()
     plt.xlabel("Armor")
     if   (type == 'dps'):
@@ -63,5 +72,4 @@ def make_graph (graph_type, armor_max, builds, file):
     
     print "Graph drawn: %s" % (graph_type)
     plt.show()
-    #wait()
     
