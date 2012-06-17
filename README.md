@@ -4,10 +4,10 @@ LoL-Damage-Calculator
 A simple program to compare the DPS of several builds and champions.
 
 
-Features:
--Graph DPS or DPS/gold
--Calculate Optimal Build
--Optimal Build Path (WIP)
+Features:  
+-Graph DPS or DPS/gold  
+-Calculate Optimal Build  
+-Optimal Build Path (WIP)  
 
 
 Libraries used:  
