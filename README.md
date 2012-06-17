@@ -1,5 +1,5 @@
-LoL-Damage-Calculator
-=====================
+LoL-Damage-Calculator v2.1
+==========================
 
 A simple program to compare the DPS of several builds and champions.
 
