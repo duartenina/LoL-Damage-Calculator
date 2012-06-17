@@ -25,12 +25,12 @@ def get_label (champ, level, items, time):
     
     return label
     
-def make_graph (graph_type, armor_max, builds, file):
+def make_graph (graph_type, armor_val, builds, file):
     """
     Creates and shows graph of type 'graph_type', with builds 'builds' and saves it to 'file' (optional)
     """
     
-    armor_range = range(armor_max)
+    armor_range = range(armor_val['min'], armor_val['max'], 1)
        
     n = len(builds)
         

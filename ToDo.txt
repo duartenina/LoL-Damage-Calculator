@@ -1,8 +1,11 @@
 *COMMENT!
 
 *BugFixes:
+  +None atm
 
-*Replace simple Armor to Armor Range (min and max)
+*Add more champions
+
+*Option for abilities (tristana's Q, masteryi's E and R, etc)
 
 *Optimize the calc of the optimal build  
   +OPTIMIZE, OPTIMIZE, OPTIMIZE

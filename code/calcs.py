@@ -2,6 +2,40 @@ from code.champ import *
 from code.item  import *
 from code.extra import *
 
+def optimal_build (armor, champ, extra, preset_items, time, item_opt, n_items, tiers, price_range):
+    """
+    Calculates the optimal build (most dps) for armor 'armor' with constraints 'n_items', 'tiers' and 'price_range'
+    """
+    
+    old_dps   = 0
+    champ_dps = calc_dps(armor, champ, extra, [], time)
+    
+    if (item_opt == 'more'):
+        all_items = filter_items_tiers(tiers)
+    else:
+        all_items = filter_items_tiers(tiers, load_items('item_less.dat'))
+    
+    
+    for items in combinations_with_replacement(all_items, n_items):
+        new_items = list(preset_items) + list(items)
+        
+        total_price = 0
+        for item in new_items:
+            total_price += item.price
+            
+        if ((total_price < price_range['min']) or (total_price > price_range['max'])):
+            continue
+        
+        dps = calc_dps(armor, champ, extra, new_items, time)
+        if (type == 'dpspergold') and (total_price != 0):
+            dps -= champ_dps
+            dps /= total_price
+        if (dps > old_dps):
+            optimal_items = new_items
+            old_dps = dps
+
+    return optimal_items
+
 def reduced_armor (armor, flat_penetration, percent_penetration, flat_reduction, percent_reduction):
     """
     Returns the new armor after reductions and penetrations are applied.

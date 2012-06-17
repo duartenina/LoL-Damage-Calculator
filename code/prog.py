@@ -80,4 +80,4 @@ def draw_graph (champs, item_sets, times):
 
 if __name__ == '__main__':
     main_menu()
-            
+
