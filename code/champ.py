@@ -229,30 +229,79 @@ def change_champ (champ):
             print "Stat not found."
     return champ    
 
-def get_champ_time (champ, level, run_time):
+def get_champ_passive_boost (champ, level):
+    """
+    Calculates the Attack Damage boost from abilities and returns dict {'time': time, 'AD': attack}, where time is how much time the ability is on and attack is the value of the boost
+    """
+    
+    attack = 0
+    
+    name       = champ.name.lower()
+    champs =   {'masteryi': {'rank_lvl': min((level+1)/2, 5), 'ranks': {1: 15, 2: 20, 3: 25, 4: 30, 5: 35}},
+                'fiora':    {'rank_lvl': min((level+1)/2, 5), 'ranks': {1: 15, 2: 20, 3: 25, 4: 30, 5: 35}}}
+    
+    if name in champs:
+        rank_lvl = champs[name]['rank_lvl']
+        attack   = champs[name]['ranks'][rank_lvl]
+    
+    return attack
+    
+def get_champ_AD_boost (champ, level, run_time):
+    """
+    Calculates the Attack Damage boost from abilities and returns dict {'time': time, 'AD': attack}, where time is how much time the ability is on and attack is the value of the boost
+    """
+
+    name       = champ.name.lower()
+    time       = 0
+    skill_time = 0
+    attack     = 0
+    
+    champs =   {'masteryi': {'rank_lvl': min((level+1)/2, 5), 'skill_time': 10,                        'ranks': {1: 15, 2: 20, 3: 25, 4: 30, 5: 35}},
+                'vayne':    {'rank_lvl': min((level-1)/5, 3), 'skill_time': (min((level-1)/5, 3)+3)*2, 'ranks': {1: 25, 2: 40, 3: 55}}}
+    
+    if name in champs:
+        skill_time = champs[name]['skill_time']
+        rank_lvl   = champs[name]['rank_lvl']
+        attack     = champs[name]['ranks'][rank_lvl]
+    
+    if (run_time < skill_time):
+        time = run_time
+    else:
+        if (name == 'masteryi'):
+            if (run_time < 35):
+                time = 20 - run_time
+            else:
+                time = -15
+        time = skill_time
+    
+    return {'time': time, 'AD': attack}
+    
+def get_champ_AS_boost (champ, level, run_time):
     """
     Calculates the Attack Speed boost from abilities and returns dict {'time': time, 'speed': speed}, where time is how much time the ability is on and speed is the value of the boost
     """
 
+    name       = champ.name.lower()
     time       = 0
     skill_time = 0
     speed      = 0
     
-    if   (champ.name.lower() == 'tristana'):
-        skill_time = 7
-        speed = min((level+1)/2, 5)
-        ranks = {1: .3, 2: .45, 3: .6, 4: .75, 5: .9}
-        speed = ranks[speed]
-    elif (champ.name.lower() == 'missfortune'):
-        skill_time = 6
-        speed = min((level+1)/2, 5)
-        ranks = {1: .3, 2: .35, 3: .4, 4: .45, 5: .5}
-        speed = ranks[speed]
-
+    champs =   {'tristana':    {'rank_lvl': min((level+1)/2, 5), 'skill_time': 7,                         'ranks': {1: .30, 2: .45, 3: .60, 4: 0.75, 5: 0.90}},
+                'missfortune': {'rank_lvl': min((level+1)/2, 5), 'skill_time': 6,                         'ranks': {1: .30, 2: .35, 3: .40, 4: 0.45, 5: 0.50}},
+                'fiora':       {'rank_lvl': min(level/2, 5),     'skill_time': 3,                         'ranks': {1: .60, 2: .75, 3: .90, 4: 1.05, 5: 1.20}},
+                'masteryi':    {'rank_lvl': min((level-1)/5, 3), 'skill_time': (min((level-1)/5, 3)+3)*2, 'ranks': {1: .40, 2: .60, 3: .80}},
+                'sivir':       {'rank_lvl': min((level-1)/5, 3), 'skill_time': 10,                        'ranks': {1: .30, 2: .45, 3: .60}},
+                'twitch':      {'rank_lvl': min((level+1)/2, 5), 'skill_time': 10,                        'ranks': {1: .30, 2: .40, 3: .50, 4: 0.60, 5: 0.70}}}
+                
+    if name in champs:
+        skill_time = champs[name]['skill_time']
+        rank_lvl   = champs[name]['rank_lvl']
+        speed      = champs[name]['ranks'][rank_lvl]
+    
     if (run_time < skill_time):
         time = run_time
     else:
         time = skill_time
-        
+    
     return {'time': time, 'speed': speed}
     

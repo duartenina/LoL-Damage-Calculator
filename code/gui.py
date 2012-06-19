@@ -34,7 +34,7 @@ class Prog (wx.Frame):
     
     def __init__ (self):
         #************************* Basic Stuff (IDs 1xxx) *************************#
-        wx.Frame.__init__(self, None, new_id('frame', 'basic', 'frame'), "LoL Damage Calculator", size = (800,600), style = wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, None, new_id('frame', 'basic', 'frame'), "LoL Damage Calculator v2.2", size = (800,600), style = wx.DEFAULT_FRAME_STYLE)
 		#style = wx.CAPTION | wx.CLOSE_BOX)
         
         #self.CenterOnScreen()
@@ -51,10 +51,9 @@ class Prog (wx.Frame):
         self.tc_champ_stats = []
         
         for i in xrange(10):
-            self.tc_champ_stats.append(self.create_champ_objects())
-            if (i != 9):
-                self.tc_champ_stats[i]['extra'].Bind(wx.EVT_CHAR, self.key_press)
-                self.Bind(wx.EVT_TEXT, self.text_change, self.tc_champ_stats[i]['extra'])
+            self.tc_champ_stats.append(self.create_champ_objects(i))
+            self.tc_champ_stats[i]['extra'].Bind(wx.EVT_CHAR, self.key_press)
+            self.Bind(wx.EVT_TEXT, self.text_change, self.tc_champ_stats[i]['extra'])
         
         wx.StaticText(self.panel, new_id('t_champ_level', 'champ', 'text'), "Level:",                        (150,15))
         self.tc_champ_level = wx.TextCtrl(self.panel, new_id('tc_champ_level', 'champ', 'textcontrol'), "0", (190,14), (40, 20))
@@ -66,23 +65,30 @@ class Prog (wx.Frame):
         self.tc_time.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_time)
         
+        wx.StaticText(self.panel, new_id('t_boost', 'champ', 'text'), 'Boosts:',                                           (215, 240))
+        
+        self.cb_boost_item = wx.CheckBox(self.panel, new_id('cb_boost_item', 'champ', 'checkbox'), 'Item Actives',         (215, 266))
+        self.Bind(wx.EVT_CHECKBOX, self.change_option, self.cb_boost_item)
+        self.cb_boost_champ = wx.CheckBox(self.panel, new_id('cb_boost_champ', 'champ', 'checkbox'), 'Champion Abilities', (215, 290))
+        self.Bind(wx.EVT_CHECKBOX, self.change_option, self.cb_boost_champ)
+        
         #************************* Items (IDs 3xxx) *************************#
         
-        wx.StaticText(self.panel, new_id('t_tiers', 'items', 'text'), "Tiers:", (10, 240))
-        self.cb_tier_1 = wx.CheckBox(self.panel, new_id('cb_tier_1', 'items', 'checkbox'), "Basic",     (10, 260))
+        wx.StaticText(self.panel, new_id('t_tiers', 'items', 'text'), "Tiers:",                         (340, 240))
+        self.cb_tier_1 = wx.CheckBox(self.panel, new_id('cb_tier_1', 'items', 'checkbox'), "Basic",     (340, 260))
         self.Bind(wx.EVT_CHECKBOX, self.tier_change, self.cb_tier_1)
-        self.cb_tier_2 = wx.CheckBox(self.panel, new_id('cb_tier_2', 'items', 'checkbox'), "Advanced",  (10, 280))
+        self.cb_tier_2 = wx.CheckBox(self.panel, new_id('cb_tier_2', 'items', 'checkbox'), "Advanced",  (340, 280))
         self.Bind(wx.EVT_CHECKBOX, self.tier_change, self.cb_tier_2)
-        self.cb_tier_3 = wx.CheckBox(self.panel, new_id('cb_tier_3', 'items', 'checkbox'), "Legendary", (10, 300))
+        self.cb_tier_3 = wx.CheckBox(self.panel, new_id('cb_tier_3', 'items', 'checkbox'), "Legendary", (340, 300))
         self.Bind(wx.EVT_CHECKBOX, self.tier_change, self.cb_tier_3)
 
         wx.StaticBox(self.panel, new_id('box_items', 'items', 'frame'), "Items", (530, 40), (250, 110))
         
         self.choice_item = []
-        for i in xrange(5):
-            self.choice_item.append(self.create_choice_item())
+        for i in xrange(6):
+            self.choice_item.append(self.create_choice_item(i))
             self.Bind(wx.EVT_CHOICE, self.pick_item, self.choice_item[i])
-       
+        
         #************************* Builds (IDs 4xxx) *************************#
         
         wx.StaticText(self.panel, new_id('t_builds', 'builds', 'text'), "Builds:", (330, 450))
@@ -112,24 +118,21 @@ class Prog (wx.Frame):
         self.tc_dps_max = wx.TextCtrl(self.panel, new_id('tc_dps_max', 'graphs', 'textcontrol'), "0", (475, 340), (40, 20), style = wx.TE_READONLY)
         
         
-        wx.StaticText(self.panel, new_id('t_armor', 'graphs', 'text'), "Armor:",                            (480, 240))
+        wx.StaticText(self.panel, new_id('t_armor', 'graphs', 'text'), "Armor:",                            (95, 240))
         
-        wx.StaticText(self.panel, new_id('t_armor_min', 'graphs', 'text'), "Minimum:",                      (480, 266))
-        self.tc_armor_min = wx.TextCtrl(self.panel, new_id('tc_armor_min', 'graphs', 'textcontrol'), "0",   (540, 265), (50, 20))
+        wx.StaticText(self.panel, new_id('t_armor_min', 'graphs', 'text'), "Minimum:",                      (95, 266))
+        self.tc_armor_min = wx.TextCtrl(self.panel, new_id('tc_armor_min', 'graphs', 'textcontrol'), "0",   (155, 265), (50, 20))
         self.tc_armor_min.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_armor_min)
         
-        wx.StaticText(self.panel, new_id('t_armor_max', 'graphs', 'text'), "Maximum:",                      (480, 291))
-        self.tc_armor_max = wx.TextCtrl(self.panel, new_id('tc_armor_max', 'graphs', 'textcontrol'), "300", (540, 290), (50, 20))
+        wx.StaticText(self.panel, new_id('t_armor_max', 'graphs', 'text'), "Maximum:",                      (95, 291))
+        self.tc_armor_max = wx.TextCtrl(self.panel, new_id('tc_armor_max', 'graphs', 'textcontrol'), "300", (155, 290), (50, 20))
         self.tc_armor_max.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_armor_max)
         
         
-        self.b_graphs_dps = wx.Button(self.panel, new_id('b_graphs_dps', 'graphs', 'button'), "DPS",              (160, 460), button_size['big'])
-        self.Bind(wx.EVT_BUTTON, self.click, self.b_graphs_dps)
-        
-        self.b_graphs_dpsgold = wx.Button(self.panel, new_id('b_graphs_dpsgold', 'graphs', 'button'), "DPS/gold", (160, 510), button_size['big'])
-        self.Bind(wx.EVT_BUTTON, self.click, self.b_graphs_dpsgold)
+        self.b_graphs = wx.Button(self.panel, new_id('b_graphs', 'graphs', 'button'), "Graph",            (10, 455), button_size['big'])
+        self.Bind(wx.EVT_BUTTON, self.click, self.b_graphs)
         
         self.cb_file = wx.CheckBox(self.panel, new_id('cb_file', 'graphs', 'checkbox'), "Save graph to file:",    (10, 500))
         self.tc_file = wx.TextCtrl(self.panel, new_id('tc_file', 'graphs', 'textcontrol'), "graph",               (10, 520), (140, 20))
@@ -139,38 +142,38 @@ class Prog (wx.Frame):
         
         #************************* Optimal Build (IDs 6xxx) *************************#
         
-        wx.StaticBox(self.panel, new_id('box_optimal', 'optimal', 'frame'), "Options",                                 (005, 220), (590, 100))
+        wx.StaticBox(self.panel, new_id('box_optimal', 'optimal', 'frame'), "Options", (005, 220), (775, 100))
         
-        wx.StaticText(self.panel, new_id('t_item_option', 'optimal', 'text'), "Optimal build:",                        (110, 240))
+        wx.StaticText(self.panel, new_id('t_item_option', 'optimal', 'text'), "Optimal build:",                           (420, 240))
         
-        self.radio_item_more = wx.RadioButton(self.panel, new_id('radio_item_more', 'optimal', 'checkbox'), "More items", (110, 265))
-        self.radio_item_fast = wx.RadioButton(self.panel, new_id('radio_item_fast', 'optimal', 'checkbox'), "Faster",     (110, 290))
+        self.radio_item_more = wx.RadioButton(self.panel, new_id('radio_item_more', 'optimal', 'checkbox'), "More items", (420, 265), style = wx.RB_GROUP)
+        self.radio_item_fast = wx.RadioButton(self.panel, new_id('radio_item_fast', 'optimal', 'checkbox'), "Faster",     (420, 290))
         
-        wx.StaticText(self.panel, new_id('t_budget', 'optimal', 'text'), "Budget:",                                    (220, 240))
+        wx.StaticText(self.panel, new_id('t_budget', 'optimal', 'text'), "Budget:",                              (620, 240))
         
-        wx.StaticText(self.panel, new_id('t_budget_min', 'optimal', 'text'), "Minimum:",                               (220, 266))
-        self.tc_budget_min = wx.TextCtrl(self.panel, new_id('tc_budget_min', 'optimal', 'textcontrol'), "0",           (280, 265), (50, 20))
+        wx.StaticText(self.panel, new_id('t_budget_min', 'optimal', 'text'), "Minimum:",                         (620, 266))
+        self.tc_budget_min = wx.TextCtrl(self.panel, new_id('tc_budget_min', 'optimal', 'textcontrol'), "0",     (680, 265), (50, 20))
         self.tc_budget_min.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_budget_min)
         
-        wx.StaticText(self.panel, new_id('t_budget_max', 'optimal', 'text'), "Maximum:",                               (220, 291))
-        self.tc_budget_max = wx.TextCtrl(self.panel, new_id('tc_budget_max', 'optimal', 'textcontrol'), "25000",       (280, 290), (50, 20))
+        wx.StaticText(self.panel, new_id('t_budget_max', 'optimal', 'text'), "Maximum:",                         (620, 291))
+        self.tc_budget_max = wx.TextCtrl(self.panel, new_id('tc_budget_max', 'optimal', 'textcontrol'), "25000", (680, 290), (50, 20))
         self.tc_budget_max.Bind(wx.EVT_CHAR, self.key_press)
         self.Bind(wx.EVT_TEXT, self.text_change, self.tc_budget_max)
         
-        wx.StaticText(self.panel, new_id('t_n_items', 'optimal', 'text'), "Number of items:",                          (360, 240))
-        self.choice_n_items = wx.Choice(self.panel, new_id('choice_n_items', 'optimal', 'choice'),                     (360, 265), (50, 20), ['1','2','3','4','5'])
+        wx.StaticText(self.panel, new_id('t_n_items', 'optimal', 'text'), "Number of items:", (510, 240))
         
-        button = wx.Button(self.panel, new_id('b_graphs_dps_optimal', 'optimal', 'button'), "Optimal DPS",             (600, 225), button_size['big'])
+        self.radio_item_num = []
+        for i in xrange(6):
+            self.radio_item_num.append(self.create_radio_item(i))
+        
+        button = wx.Button(self.panel, new_id('b_optimal', 'optimal', 'button'), "Optimal Build", (570, 165), button_size['big'])
         self.Bind(wx.EVT_BUTTON, self.click, button)
         
-        button = wx.Button(self.panel, new_id('b_graphs_dpsgold_optimal', 'optimal', 'button'), "Optimal DPS/gold",    (600, 270), button_size['big'])
-        self.Bind(wx.EVT_BUTTON, self.click, button)
-        
-        wx.StaticText(self.panel, new_id('t_armor_val', 'optimal', 'text'), "Current Armor:",                          (615, 321))
-        self.tc_armor_val = wx.TextCtrl(self.panel, new_id('tc_armor_val', 'optimal', 'textcontrol'), "0",             (700, 320), (40, 20), style = wx.TE_READONLY)
+        wx.StaticText(self.panel, new_id('t_armor_val', 'optimal', 'text'), "Current Armor:",                (615, 326))
+        self.tc_armor_val = wx.TextCtrl(self.panel, new_id('tc_armor_val', 'optimal', 'textcontrol'), "0",   (700, 325), (40, 20), style = wx.TE_READONLY)
 
-        self.gauge_armor_val = wx.Gauge(self.panel, new_id('gauge_armor_val', 'optimal', 'gauge'), 1000,               (615, 350), (130, 15))
+        self.gauge_armor_val = wx.Gauge(self.panel, new_id('gauge_armor_val', 'optimal', 'gauge'), 1000,     (615, 355), (130, 15))
         self.timer_armor_val = wx.Timer(self, new_id('timer_armor_val', 'optimal', 'timer'))
         self.Bind(wx.EVT_TIMER, self.on_timer)
         
@@ -181,7 +184,10 @@ class Prog (wx.Frame):
         text = wx.StaticText(self.panel, new_id('t_build_path', 'build_path', 'text'), "WIP",           (30, 395), style=wx.ALIGN_CENTER)
         text.SetFont(wx.Font(26, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
         
+        wx.StaticText(self.panel, new_id('t_item_option', 'build_path', 'text'), "Calc Option:",                                 (10, 240))
         
+        self.radio_calc_dps = wx.RadioButton(self.panel, new_id('radio_calc_dps', 'build_path', 'checkbox'), "DPS",              (10, 265), style = wx.RB_GROUP)
+        self.radio_calc_dpsgold = wx.RadioButton(self.panel, new_id('radio_calc_dpsgold', 'build_path', 'checkbox'), "DPS/gold", (10, 290))
         
         #************************* Defaults *************************#
         self.choice_champ.SetSelection(0)
@@ -189,99 +195,98 @@ class Prog (wx.Frame):
         self.cb_tier_1.SetValue(0)
         self.cb_tier_2.SetValue(1)
         self.cb_tier_3.SetValue(1)
+        self.cb_boost_item.SetValue(1)
+        self.cb_boost_champ.SetValue(1)
         self.tier_change(None)
-        self.choice_n_items.SetStringSelection('4')
+        self.radio_item_num[0].SetValue(0)
+        self.radio_item_num[3].SetValue(1)
         self.radio_item_fast.SetValue(1)
-        self.b_graphs_dps.Disable()
-        self.b_graphs_dpsgold.Disable()
+        self.b_graphs.Disable()
         self.update_stats()
         
-    def create_champ_objects (self):
+    def create_champ_objects (self, i):
         """
         Creates the objects for the various champ stats
         """
         
-        id_base = ID_location['champ'] + ID_type['textcontrol']
-        id      = ID_counter['champ']['textcontrol'] - id_base
-        
         name = {0: 'Attack Damage', 1: 'Attack Scaling', 2: 'Attack Speed', 3: 'Speed Scaling', 4: 'Multiplier',
                 5: 'Flat Penetration', 6: 'Percent Penetration', 7: 'Critical Chance', 8: 'Critical Damage', 9: 'Type'}
         
-        y_base   = 70
-        y_per_id = 30
-        tc_size  = (45, 20)
+        y_base  = 70
+        dy      = 30
+        tc_size = (45, 20)
         
-        if (id < 5):
-            txt_pos   = (010, y_base + id*y_per_id)
-            tc_ro_pos = (100, y_base + id*y_per_id)
-            tc_ex_pos = (150, y_base + id*y_per_id)
-            tc_pos    = (200, y_base + id*y_per_id)
+        if (i < 5):
+            txt_pos   = (010, y_base + i*dy)
+            tc_ro_pos = (100, y_base + i*dy)
+            tc_ex_pos = (150, y_base + i*dy)
+            tc_pos    = (200, y_base + i*dy)
         else:
-            txt_pos   = (260, y_base + (id-5)*y_per_id)
-            tc_ro_pos = (370, y_base + (id-5)*y_per_id)
-            tc_ex_pos = (420, y_base + (id-5)*y_per_id)
-            tc_pos    = (470, y_base + (id-5)*y_per_id)
+            txt_pos   = (260, y_base + (i-5)*dy)
+            tc_ro_pos = (370, y_base + (i-5)*dy)
+            tc_ex_pos = (420, y_base + (i-5)*dy)
+            tc_pos    = (470, y_base + (i-5)*dy)
         
-        if   (id == 0):
+        if   (i == 0):
             ID['t_stat_champ_1'] = ID_location['champ'] + ID_type['text'] + 15
-            wx.StaticText(self.panel, ID['t_stat_champ_1'], "Champ", (100, 50))
+            wx.StaticText(self.panel, new_id('t_stat_champ_1', 'champ', 'textcontrol'), "Champ", (100, 50))
             ID['t_stat_item_1'] = ID_location['champ'] + ID_type['text'] + 16
-            wx.StaticText(self.panel, ID['t_stat_item_1'], "Items",  (157, 50))
+            wx.StaticText(self.panel, new_id('t_stat_item_1', 'champ', 'textcontrol'), "Items",  (157, 50))
             ID['t_stat_extra_1'] = ID_location['champ'] + ID_type['text'] + 17
-            wx.StaticText(self.panel, ID['t_stat_extra_1'], "Extra", (205, 50))
-        elif (id == 5):
+            wx.StaticText(self.panel, new_id('t_stat_extra_1', 'champ', 'textcontrol'), "Extra", (205, 50))
+        elif (i == 5):
             ID['t_stat_champ_2'] = ID_location['champ'] + ID_type['text'] + 18
-            wx.StaticText(self.panel, ID['t_stat_champ_1'], "Champ", (370, 50))
+            wx.StaticText(self.panel, new_id('t_stat_champ_2', 'champ', 'textcontrol'), "Champ", (370, 50))
             ID['t_stat_item_2'] = ID_location['champ'] + ID_type['text'] + 19
-            wx.StaticText(self.panel, ID['t_stat_item_1'], "Items",  (427, 50))
+            wx.StaticText(self.panel, new_id('t_stat_item_2', 'champ', 'textcontrol'), "Items",  (427, 50))
             ID['t_stat_extra_2'] = ID_location['champ'] + ID_type['text'] + 20
-            wx.StaticText(self.panel, ID['t_stat_extra_1'], "Extra", (475, 50))
+            wx.StaticText(self.panel, new_id('t_stat_extra_2', 'champ', 'textcontrol'), "Extra", (475, 50))
         
-        id_name = '_champ_' + name[id].lower().replace(' ', '_')
+        id_name = '_champ_' + name[i].lower().replace(' ', '_')
 
-        ID['t' + id_name] = id + ID_location['champ'] + ID_type['text']
-        wx.StaticText(self.panel, ID['t' + id_name], name[id] + ':', txt_pos)
+        wx.StaticText(self.panel, new_id('t' + id_name, 'champ', 'textcontrol'), name[i] + ':', txt_pos)
         
-        if (id != 9):
-            ID['tc' + id_name + '_base'] = id_base + id
-            tc_base = wx.TextCtrl(self.panel, ID['tc' + id_name + '_base'], "0", tc_ro_pos, tc_size, style = wx.TE_READONLY)
-            ID['tc' + id_name + '_item'] = id_base + id + 10
-            tc_item = wx.TextCtrl(self.panel, ID['tc' + id_name + '_item'], "0", tc_ex_pos, tc_size, style = wx.TE_READONLY)
-            ID['tc' + id_name + '_extra'] = id_base + id + 20
-            tc_extra = wx.TextCtrl(self.panel, ID['tc' + id_name + '_extra'], "0", tc_pos, tc_size)
+        if (i != 9):
+            tc_base = wx.TextCtrl(self.panel, new_id('tc' + id_name + '_base', 'champ', 'textcontrol'), "0", tc_ro_pos, tc_size, style = wx.TE_READONLY)
+            tc_item = wx.TextCtrl(self.panel, new_id('tc' + id_name + '_item', 'champ', 'textcontrol'), "0", tc_ex_pos, tc_size, style = wx.TE_READONLY)
+            tc_extra = wx.TextCtrl(self.panel, new_id('tc' + id_name + '_extra', 'champ', 'textcontrol'), "0", tc_pos, tc_size)
         else: 
-            ID['tc' + id_name + '_base'] = id_base + id
-            tc_base  = wx.TextCtrl(self.panel, ID['tc' + id_name + '_base'], "Ranged", tc_ro_pos, (60, 20), style = wx.TE_READONLY)
-            tc_item  = None
-            tc_extra = None
-        
-        ID_counter['champ']['text'] += 1
-        ID_counter['champ']['textcontrol'] += 1
-        if (id == 9):
-            ID_counter['champ']['textcontrol'] += 19
+            tc_base = wx.TextCtrl(self.panel, new_id('tc' + id_name + '_base', 'champ', 'textcontrol'), "Ranged", tc_ro_pos, (60, 20), style = wx.TE_READONLY)
+            tc_item = wx.TextCtrl(self.panel, new_id('tc' + id_name + '_item', 'champ', 'textcontrol'), "0", tc_ex_pos, tc_size, style = wx.TE_READONLY)
+            tc_item.Hide()
+            tc_extra = wx.TextCtrl(self.panel, new_id('tc' + id_name + '_extra', 'champ', 'textcontrol'), "0", tc_pos, tc_size)
+            tc_extra.Hide()
         
         return {'base': tc_base, 'item': tc_item, 'extra': tc_extra}
         
-        
-    def create_choice_item (self):
+    def create_choice_item (self, i):
         """
         Creates the choices for the 5 items
         """
     
-        id_base = ID_location['items'] + ID_type['choice']
-        id      = ID_counter['items']['choice'] - id_base
-    
-        #item_list = get_item_list()
-        pos = {0: (535, 60), 1: (535, 90), 2: (660, 90), 3: (535, 120), 4: (660, 120)}
+        pos = {0: (535, 60), 1: (660, 60), 2: (535, 90), 3: (660, 90), 4: (535, 120), 5: (660, 120)}
         
-        choice_item = wx.Choice(self.panel, id_base + id, pos[id], (110, 25), ["None"])
+        choice_item = wx.Choice(self.panel, new_id('tc_choice_' + str(i), 'items', 'choice'), pos[i], (110, 25), ["None"])
         choice_item.SetStringSelection("None")
         
-        ID_counter['items']['choice'] += 1
-        ID['tc_choice_' + str(id)] = id_base + id
-        
         return choice_item
+    
+    def create_radio_item (self, i):
+        """
+        Creates the radio items for the number of items
+        """
         
+        pos = {0: (510, 266), 1: (540, 266), 2: (570, 266), 3: (510, 290), 4: (540, 290), 5: (570, 290)}
+        
+        if (i == 0):
+            style = wx.RB_GROUP
+        else:
+            style = 0
+            
+        radio_item = wx.RadioButton(self.panel, new_id('radio_item_num_' + str(i), 'optimal', 'checkbox'), str(i+1), pos[i], style=style)
+        
+        return radio_item
+    
     #************************* Event Functions *************************#
         
     def click (self, event):
@@ -291,20 +296,16 @@ class Prog (wx.Frame):
     
         id = event.GetId()
         
-        if   (id == ID['b_builds_add']):                            #"Add [Build]" Button
+        if   (id == ID['b_builds_add']):                            
             self.build_add (event)
-        elif (id == ID['b_builds_remove']):                         #"Remove [Build]" Button
+        elif (id == ID['b_builds_remove']):                         
             self.build_remove (event)
-        elif (id == ID['b_builds_clear']):                          #"Clear" Button
+        elif (id == ID['b_builds_clear']):                          
             self.build_clear (event)
-        elif (id == ID['b_graphs_dps']):                            #"DPS" Button
-            self.graph ('dps', event)
-        elif (id == ID['b_graphs_dpsgold']):                        #"DPS/gold" Button
-            self.graph ('dpspergold', event)           
-        elif (id == ID['b_graphs_dps_optimal']):                    #"DPS" Button
-            self.calc_optimal_builds ('dps', event)
-        elif (id == ID['b_graphs_dpsgold_optimal']):                #"DPS/gold" Button
-            self.calc_optimal_builds ('dpspergold', event)
+        elif (id == ID['b_graphs']):  
+            self.graph (event)           
+        elif (id == ID['b_optimal']): 
+            self.calc_optimal_builds (event)
     
     def text_change (self, event):
         """
@@ -333,122 +334,6 @@ class Prog (wx.Frame):
     
     def key_press (self, event):
         """
-        Key press redirect
-        """
-        
-        self.tc_validate_key (event)
-        
-    def tier_change (self, event):
-        tiers = {}
-        tiers['None']      = 1
-        tiers['Basic']     = int(self.cb_tier_1.GetValue())
-        tiers['Advanced']  = int(self.cb_tier_2.GetValue())
-        tiers['Legendary'] = int(self.cb_tier_3.GetValue())
-        
-        items     = filter_items_tiers(tiers)
-        item_list = get_item_list(items)
-        
-        for i in xrange(5):
-            self.choice_item[i].Clear()
-            self.choice_item[i].AppendItems(item_list)
-            self.choice_item[i].SetStringSelection("None")
-            
-    def on_timer (self, event):
-        id = event.GetId()
-        
-        if   (id == ID['timer_armor_val']):
-            self.tc_armor_val.SetValue('0')
-            self.gauge_armor_val.SetValue(0)
-            self.timer_armor_val.Stop()
-            
-        
-    #************************* Other Functions *************************#            
-            
-    def pick_champ (self, event):
-        """
-        Update stats after changing the champ in choice_champ
-        """
-        
-        champ = get_champ(self.choice_champ.GetStringSelection())
-        print "Champion chosen: %s" % (champ.name)
-        
-        self.update_stats()
-        self.tc_champ_stats[9]['base'] = champ.type
-        self.tc_champ_level.SetValue(str(champ.level))
-    
-    def pick_item (self, event):
-        """
-        Update stats after changing an item
-        """
-        
-        item_name = event.GetString()
-        event_id  = event.GetId()
-        
-        self.update_stats()
-        
-        print "Item chosen: %s" % (item_name)
-    
-    def update_stats (self):
-        """
-        Update stats after a change in the build
-        """
-        
-        stats = {0: 'attack', 1: 'attack_scaling', 2: 'speed', 3: 'speed_scaling', 4: 'multiplier',
-                5: 'flat_penetration', 6: 'percent_penetration', 7: 'critical_chance', 8: 'critical_damage'}
-        
-        champ = get_champ(self.choice_champ.GetStringSelection())
-        
-        extra = {}
-        for i in xrange(9):
-            extra[stats[i]] = float(self.tc_champ_stats[i]['extra'].GetValue())
-        extra['level'] = int(self.tc_champ_level.GetValue())
-        
-        items = []
-        for choice in self.choice_item:
-            item_name = choice.GetStringSelection()
-            if (item_name != "None"):
-                item = get_item(item_name)
-                items.append(item)
-        
-        time  = int(self.tc_time.GetValue())
-        armor = {'min': int(self.tc_armor_min.GetValue()), 'max': int(self.tc_armor_max.GetValue())}
-        
-        for stat in stats:
-            value = champ[stats[stat]]
-            self.tc_champ_stats[stat]['base'].SetValue(str(value))
-            value = 0
-            
-            b  = 0
-            gb = 0
-            ie = 0
-            lw = 0
-            
-            for item in items:
-                if (((stats[stat] == 'flat_penetration')    and (item.short.lower() == "b")  and (b  != 0)) or
-                    ((stats[stat] == 'flat_penetration')    and (item.short.lower() == "gb") and (gb != 0)) or
-                    ((stats[stat] == 'critical_damage')     and (item.short.lower() == "ie") and (ie != 0)) or
-                    ((stats[stat] == 'percent_penetration') and (item.short.lower() == "lw") and (lw != 0))):
-                    continue
-                
-                value += item[stats[stat]]
-                if (DEBUG): print item.short + ":", stats[stat], "=", item[stats[stat]]
-                
-                if (item.short.lower() == "b"):  b  = 1
-                if (item.short.lower() == "ie"): ie = 1
-                if (item.short.lower() == "gb"): gb = 1
-                if (item.short.lower() == "lw"): lw = 1
-            
-            if (stats[stat] == 'critical_chance') and (value > 1):
-                value = 1
-            
-            self.tc_champ_stats[stat]['item'].SetValue(str(value))
-            
-        self.tc_dps_min.SetValue(str(int(calc_dps(armor['max'], champ, extra, items, time))))
-        self.tc_dps_avg.SetValue(str(int(calc_dps((armor['max'] + armor['min'])/2, champ, extra, items, time))))
-        self.tc_dps_max.SetValue(str(int(calc_dps(armor['min'], champ, extra, items, time))))
-        
-    def tc_validate_key (self, event):
-        """
         Validate Key (prevent, for example, letters in number-only textcontrols)
         """
         
@@ -471,7 +356,133 @@ class Prog (wx.Frame):
                 ((keycode >= ord('A')) and (keycode <= ord('Z'))) or
                 (keycode == ord('_'))):
                 event.Skip()
-                    
+        
+    def tier_change (self, event):
+        """
+        Update items after changing the visible tiers
+        """
+        
+        tiers = {}
+        tiers['None']      = 1
+        tiers['Basic']     = int(self.cb_tier_1.GetValue())
+        tiers['Advanced']  = int(self.cb_tier_2.GetValue())
+        tiers['Legendary'] = int(self.cb_tier_3.GetValue())
+        
+        items     = filter_items_tiers(tiers)
+        item_list = get_item_list(items)
+        
+        for i in xrange(5):
+            self.choice_item[i].Clear()
+            self.choice_item[i].AppendItems(item_list)
+            self.choice_item[i].SetStringSelection("None")
+            
+    def on_timer (self, event):
+        """
+        Timer events
+        """
+    
+        id = event.GetId()
+        
+        if   (id == ID['timer_armor_val']):
+            self.tc_armor_val.SetValue('0')
+            self.gauge_armor_val.SetValue(0)
+            self.timer_armor_val.Stop()
+            
+    def change_option (self, event):
+        """
+        Update stats when any DPS option is changed
+        """
+        
+        self.update_stats()
+
+    #************************* Other Functions *************************#            
+
+    def pick_champ (self, event):
+        """
+        Update stats after changing the champ in choice_champ
+        """
+        
+        champ = get_champ(self.choice_champ.GetStringSelection())
+        print "Champion chosen: %s" % (champ.name)
+        
+        self.update_stats()
+        self.tc_champ_stats[9]['base'].SetValue(champ.type)
+        self.tc_champ_level.SetValue(str(champ.level))
+    
+    def pick_item (self, event):
+        """
+        Update stats after changing an item
+        """
+        
+        item_name = event.GetString()
+        event_id  = event.GetId()
+        
+        self.update_stats()
+        
+        print "Item chosen: %s" % (item_name)
+    
+    def update_stats (self):
+        """
+        Update stats after a change in the build
+        """
+        
+        stats = {0: 'attack', 1: 'attack_scaling', 2: 'speed', 3: 'speed_scaling', 4: 'multiplier',
+                5: 'flat_penetration', 6: 'percent_penetration', 7: 'critical_chance', 8: 'critical_damage', 9: 'type'}
+        
+        champ = get_champ(self.choice_champ.GetStringSelection())
+        
+        extra = {}
+        for i in xrange(9):
+            extra[stats[i]] = float(self.tc_champ_stats[i]['extra'].GetValue())
+        extra['level'] = int(self.tc_champ_level.GetValue())
+        
+        items = []
+        for choice in self.choice_item:
+            item_name = choice.GetStringSelection()
+            if (item_name != "None"):
+                item = get_item(item_name)
+                items.append(item)
+        
+        time  = int(self.tc_time.GetValue())
+        armor = {'min': int(self.tc_armor_min.GetValue()), 'max': int(self.tc_armor_max.GetValue())}
+        
+        boost = {'item': int(self.cb_boost_item.GetValue()), 'champ': int(self.cb_boost_champ.GetValue())}
+        
+        for stat in stats:
+            value = champ[stats[stat]]
+            self.tc_champ_stats[stat]['base'].SetValue(str(value))
+            value = 0
+            
+            b  = 0
+            gb = 0
+            ie = 0
+            lw = 0
+            
+            for item in items:
+                if (((stats[stat] == 'flat_penetration')    and (item.short.lower() == "b")  and (b  != 0)) or
+                    ((stats[stat] == 'flat_penetration')    and (item.short.lower() == "gb") and (gb != 0)) or
+                    ((stats[stat] == 'critical_damage')     and (item.short.lower() == "ie") and (ie != 0)) or
+                    ((stats[stat] == 'percent_penetration') and (item.short.lower() == "lw") and (lw != 0))):
+                    continue
+                value += item[stats[stat]]
+                if (DEBUG): print item.short + ":", stats[stat], "=", item[stats[stat]]
+                
+                if (item.short.lower() == "b"):  b  = 1
+                if (item.short.lower() == "ie"): ie = 1
+                if (item.short.lower() == "gb"): gb = 1
+                if (item.short.lower() == "lw"): lw = 1
+            
+            if (stats[stat] == 'speed') and (value > 2.5):
+                value = 2.5
+            if (stats[stat] == 'critical_chance') and (value > 1):
+                value = 1
+            
+            self.tc_champ_stats[stat]['item'].SetValue(str(value))
+            
+        self.tc_dps_min.SetValue(str(int(calc_dps(armor['max'], champ, extra, items, time, boost))))
+        self.tc_dps_avg.SetValue(str(int(calc_dps((armor['max'] + armor['min'])/2, champ, extra, items, time, boost))))
+        self.tc_dps_max.SetValue(str(int(calc_dps(armor['min'], champ, extra, items, time, boost))))
+        
     def int_validate (self, tc, min, max):
         """
         Check if the new value is within the limits
@@ -490,6 +501,10 @@ class Prog (wx.Frame):
         return False                    
     
     def compare_value (self, tc_min, tc_max):
+        """
+        Check (and correct) a pair of textcontrols' order
+        """
+    
         min = int(tc_min.GetValue())
         max = int(tc_max.GetValue())
         if (min > max):
@@ -510,10 +525,8 @@ class Prog (wx.Frame):
             print "Build added: %s" % (build['name'])
             self.lb_builds.SetSelection(self.lb_builds.GetCount() - 1)
             
-        if not (self.b_graphs_dps.IsEnabled()):
-            self.b_graphs_dps.Enable()
-        if not (self.b_graphs_dpsgold.IsEnabled()):
-            self.b_graphs_dpsgold.Enable()
+        if not (self.b_graphs.IsEnabled()):
+            self.b_graphs.Enable()
         
     def build_remove (self, event):
         """
@@ -526,8 +539,7 @@ class Prog (wx.Frame):
             self.lb_builds.SetSelection(self.lb_builds.GetCount() - 1)
         
         if (self.lb_builds.GetCount() == 0):
-            self.b_graphs_dps.Disable()
-            self.b_graphs_dpsgold.Disable()
+            self.b_graphs.Disable()
             
     def build_clear (self, event):
         """
@@ -537,8 +549,7 @@ class Prog (wx.Frame):
         if (self.lb_builds.GetCount() > 0):
             print "All builds removed"
             self.lb_builds.Clear()
-            self.b_graphs_dps.Disable()
-            self.b_graphs_dpsgold.Disable()
+            self.b_graphs.Disable()
         
     def get_build (self):
         """
@@ -599,13 +610,18 @@ class Prog (wx.Frame):
             
         self.tc_time.SetValue(str(build['time']))
     
-    def graph (self, type, event):
+    def graph (self, event):
         """
         Graph the builds
         """
         
         lb = self.lb_builds
         n  = lb.GetCount()
+        
+        if   (self.radio_calc_dps.GetValue() == 1):
+            type = 'dps'
+        elif (self.radio_calc_dpsgold.GetValue() == 1):
+            type = 'dpsgold'
         
         armor = {'min': int(self.tc_armor_min.GetValue()), 'max': int(self.tc_armor_max.GetValue())}
         
@@ -624,19 +640,28 @@ class Prog (wx.Frame):
         
         for i in xrange(n):
             builds.append(lb.GetClientData(i))
+
+        boost = {'item': int(self.cb_boost_item.GetValue()), 'champ': int(self.cb_boost_champ.GetValue())}
             
-        if (type == 'dpspergold'):
+        if (type == 'dpsgold'):
             for i in xrange(n):
                 if (builds[i]['items'] == []):
                     message = wx.MessageBox('Impossible to graph DPS/gold with no items.', 'Error', wx.OK | wx.ICON_ERROR)
                     return None
         
-        make_graph (type, armor, builds, file)
+        make_graph (type, armor, builds, boost, file)
         
-    def calc_optimal_builds (self, type, event):
+    def calc_optimal_builds (self, event):
         """
         Calculate the optimal build for each armor in the range of armors
         """
+        
+        if   (self.radio_calc_dps.GetValue() == 1):
+            type = 'dps'
+        elif (self.radio_calc_dpsgold.GetValue() == 1):
+            type = 'dpsgold'
+        
+        boost = {'item': int(self.cb_boost_item.GetValue()), 'champ': int(self.cb_boost_champ.GetValue())}
         
         tiers = {}
         tiers['None']      = 0
@@ -645,9 +670,12 @@ class Prog (wx.Frame):
         tiers['Legendary'] = int(self.cb_tier_3.GetValue())
         
         armor_range = {'min': int(self.tc_armor_min.GetValue()),  'max': int(self.tc_armor_max.GetValue())}
-        price_range = {'min': int(self.tc_budget_min.GetValue()), 'max': int(self.tc_budget_max.GetValue())}
-        n_items     = int(self.choice_n_items.GetStringSelection())
         step_size   = self.gauge_armor_val.GetRange() / (armor_range['max'] - armor_range['min'])
+        price_range = {'min': int(self.tc_budget_min.GetValue()), 'max': int(self.tc_budget_max.GetValue())}
+        
+        for i in xrange(len(self.radio_item_num)):
+            if (self.radio_item_num[i].GetValue()):
+                n_items = i+1
         
         if (price_range['min'] > price_range['max']):
             temp               = price_range['max']
@@ -682,7 +710,7 @@ class Prog (wx.Frame):
             old_pos = self.gauge_armor_val.GetValue()
             self.gauge_armor_val.SetValue(old_pos + step_size)
             
-            optimal_items = optimal_build(armor, champ, extra, preset_items, time, item_opt, n_items, tiers, price_range)
+            optimal_items = optimal_build(armor, champ, extra, preset_items, time, boost, item_opt, n_items, tiers, price_range)
             
             new_label = get_label(champ, extra['level'], optimal_items, time)
             
@@ -694,6 +722,9 @@ class Prog (wx.Frame):
                 n += 1
                 if (n > 8): break
         
+        print "Optimal build(s) of %i item(s) calculated." % (n_items)
+        
+        self.b_graphs.Enable()
         self.gauge_armor_val.SetValue(self.gauge_armor_val.GetRange())
         self.timer_armor_val.Start(1500)
     

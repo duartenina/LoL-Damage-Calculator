@@ -1,7 +1,7 @@
 "None",0,0,0,0,0,0,0,0,"N",None,"",0
 "AgilityCloak",0,0,0,0,0.18,0,0,830,"AC",Basic,"",0
 "AvariceBlade",0,0,0,0,0.12,0,0,750,"AB",Advanced,"BG",350
-"BerserkersGreaves",0,0.25,0,0,0,0,0,920,"BE",Advanced,"D",500
+"BerserkersGreaves",0,0.25,0,0,0,0,0,920,"BG",Advanced,"D",500
 "BFSword",45,0,0,0,0,0,0,1650,"BF",Basic,"",0
 "BlackCleaver",55,0.3,0,0,0,0,0,2865,"BC",Advanced,"BF+D",795
 "Bloodthirster",100,0,0,0,0,0,0,3000,"BT",Advanced,"BF",1350

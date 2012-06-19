@@ -2,19 +2,18 @@ from code.champ import *
 from code.item  import *
 from code.extra import *
 
-def optimal_build (armor, champ, extra, preset_items, time, item_opt, n_items, tiers, price_range):
+def optimal_build (armor, champ, extra, preset_items, time, boost, item_opt, n_items, tiers, price_range):
     """
     Calculates the optimal build (most dps) for armor 'armor' with constraints 'n_items', 'tiers' and 'price_range'
     """
     
     old_dps   = 0
-    champ_dps = calc_dps(armor, champ, extra, [], time)
+    champ_dps = calc_dps(armor, champ, extra, preset_items, time, boost)
     
-    if (item_opt == 'more'):
+    if   (item_opt == 'more'):
         all_items = filter_items_tiers(tiers)
-    else:
+    elif (item_opt == 'fast'):
         all_items = filter_items_tiers(tiers, load_items('item_less.dat'))
-    
     
     for items in combinations_with_replacement(all_items, n_items):
         new_items = list(preset_items) + list(items)
@@ -26,8 +25,8 @@ def optimal_build (armor, champ, extra, preset_items, time, item_opt, n_items, t
         if ((total_price < price_range['min']) or (total_price > price_range['max'])):
             continue
         
-        dps = calc_dps(armor, champ, extra, new_items, time)
-        if (type == 'dpspergold') and (total_price != 0):
+        dps = calc_dps(armor, champ, extra, new_items, time, boost)
+        if (type == 'dpsgold') and (total_price != 0):
             dps -= champ_dps
             dps /= total_price
         if (dps > old_dps):
@@ -61,7 +60,7 @@ def calc_damage (attack, multiplier, critical_chance, critical_damage, armor):
     else:
         return (attack * multiplier * (1 + critical_chance * critical_damage) * (2. - 100. / (100. - armor)))
 
-def calc_dps (armor, champ, extra, items, time):
+def calc_dps (armor, champ=get_champ('Ashe'), extra=None, items=[], time=5, boost={'item': 1, 'champ':1}):
     """
     Returns the dps of a certain build
     """
@@ -73,10 +72,16 @@ def calc_dps (armor, champ, extra, items, time):
         extra = {}
         for stat in stats:
             extra[stats[stat]] = 0
+        extra['level'] = champ.level
     
-    total_attack               = champ.attack + extra['attack'] + (champ.attack_scaling + extra['attack_scaling']) * (extra['level'] - 1)
+    champ_AD_boost = get_champ_AD_boost(champ, extra['level'], time)
+    champ_passive_AD_boost = get_champ_passive_boost(champ, extra['level'])
+    
+    total_attack               = champ.attack + extra['attack'] + (champ.attack_scaling + extra['attack_scaling']) * (extra['level'] - 1) + boost['champ']*champ_passive_AD_boost
+    total_attack              += boost['champ']*champ_AD_boost['time']*champ_AD_boost['AD']/time
     speed_multiplier           = 1 + extra['speed'] + (champ.speed_scaling + extra['speed_scaling']) * (extra['level'] - 1)
     total_multiplier           = champ.multiplier + extra['multiplier']
+    if (champ.name.lower() == 'corki'): total_multiplier += boost['champ']*0.1      #going to go to a function as soon as I code Cait's passive
     total_critical_chance      = champ.critical_chance + extra['critical_chance']
     total_critical_damage      = champ.critical_damage + extra['critical_damage']
     total_flat_penetration     = champ.flat_penetration + extra['flat_penetration']
@@ -111,18 +116,17 @@ def calc_dps (armor, champ, extra, items, time):
     if (total_critical_chance > 1): total_critical_chance = 1
     total_percent_penetration  = 1 - total_percent_penetration
         
-    gb_stats    = get_item_time("gb", time, champ.type)
-    champ_stats = get_champ_time(champ, extra['level'], time)
+    gb_AS_boost    = get_item_AS_boost("gb", time, champ.type)
+    champ_AS_boost = get_champ_AS_boost(champ, extra['level'], time)
     
-    total_speed = champ.speed * (speed_multiplier + (gb*gb_stats['time']*gb_stats['speed'] + champ_stats['time']*champ_stats['speed'])/time)    #Average Attack Speed from boosts
+    total_speed = champ.speed * (speed_multiplier + (boost['item']*gb*gb_AS_boost['time']*gb_AS_boost['speed'] + boost['champ']*champ_AS_boost['time']*champ_AS_boost['speed'])/time)    #Average Attack Speed from boosts
     if (total_speed > 2.5): total_speed = 2.5
     
-    n_attacks   = time*total_speed
+    n_attacks = time*total_speed
     
-    bc_stats    = get_item_attacks("bc", n_attacks)
-    total_flat_reduction += bc*bc_stats['n']*bc_stats['value']/n_attacks   #Average Armor Reduction from boosts
+    bc_boost = get_item_boost("bc", n_attacks)
+    total_flat_reduction += bc*bc_boost['n']*bc_boost['value']/n_attacks   #Average Armor Reduction from boosts
     
     total_armor = reduced_armor(armor, total_flat_penetration, total_percent_penetration, total_flat_reduction, total_percent_reduction)
-    dps = calc_damage(total_attack, total_multiplier, total_critical_chance, total_critical_damage, total_armor) * total_speed
     
-    return dps
+    return calc_damage(total_attack, total_multiplier, total_critical_chance, total_critical_damage, total_armor) * total_speed

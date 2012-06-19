@@ -146,7 +146,7 @@ def get_item_list (all_items=load_items()):
     
     return item_list
     
-def get_item_time (item_name, run_time, champ_type):
+def get_item_AS_boost (item_name, run_time, champ_type):
     """
     Calculates the Attack Speed boost from items' actives and returns dict {'time': time, 'speed': speed},
      where time is how much time the item active is on and speed is the value of the boost
@@ -169,7 +169,7 @@ def get_item_time (item_name, run_time, champ_type):
         
     return {'time': time, 'speed': speed}
     
-def get_item_attacks (item_name, n_attacks):
+def get_item_boost (item_name, n_attacks):
     """
     Calculates the boost from items and returns dict {'n': n, 'value': value},
      where n is the number of attacks where the boost works and value is the value of the boost

@@ -1,25 +1,33 @@
 *COMMENT!
 
+*Change int() and float() to to_int() and to_float() (custom functions that don't break with '' or '.')
+
 *BugFixes:
-  +None atm
+  +MasterYi's 
+  +Optimal build ALWAYS fills all the possible slots: working as intended or not?
 
-*Add more champions
-
-*Option for abilities (tristana's Q, masteryi's E and R, etc)
-
-*Optimize the calc of the optimal build  
-  +OPTIMIZE, OPTIMIZE, OPTIMIZE
+*Add more champions abilities:
+  +Cait's passive
+  +Corki's E
+  +Draven's passive and Q
+  +Ez's passive
+  +Kog's W
+  +Yi's E Active
+  +MF's W passive
+  +Trynd's Q
+  +Twitch's passive and ult
+  +Varus's passive and W
+  +Vayne's W
+  
+*Add "Best build path"   
+  +Start with end items  
+  +Calculate the item path that keeps the highest DPS throughout the game  
+  +Options:  
+    »Number of slots
   
 *Add "What's the best stat now?" (half-thought idea)  
   +Start with a build  
   +Add 1% AD/AS/ArP/etc  
   +Calculate the new DPS and compare the % change  
   +Compare the diferent increases   
-  +graph versus armor?  
-
-*Add "Best build path"   
-  +Start with end items  
-  +Calculate the item path that keeps the highest DPS throught the game  
-  +Options:  
-    »Number of slots  
-    »Highest DPS or DPS/gold
+  +graph versus armor?

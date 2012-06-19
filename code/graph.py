@@ -25,7 +25,7 @@ def get_label (champ, level, items, time):
     
     return label
     
-def make_graph (graph_type, armor_val, builds, file):
+def make_graph (graph_type, armor_val, builds, boost, file):
     """
     Creates and shows graph of type 'graph_type', with builds 'builds' and saves it to 'file' (optional)
     """
@@ -43,12 +43,12 @@ def make_graph (graph_type, armor_val, builds, file):
         total_price = 0
         
         for armor in armor_range:
-            temp = calc_dps(armor, champ, extra, items, time)
-            if (graph_type == 'dpspergold'):
+            temp = calc_dps(armor, champ, extra, items, time, boost)
+            if (graph_type == 'dpsgold'):
                 for item in items:
                     total_price += item.price
-                temp -= calc_dps(armor, champ, extra, [], time)
-                temp /= total_price/1000
+                temp -= calc_dps(armor, champ, extra, [], time, boost)
+                temp /= total_price/1000.
             dps.append(temp)
         
         #plt.plot(armor_range, dps, graph_settings[i], label = get_label(champ, items, time))
@@ -58,7 +58,7 @@ def make_graph (graph_type, armor_val, builds, file):
     plt.xlabel("Armor")
     if   (type == 'dps'):
         plt.ylabel("DPS")
-    elif (type == 'dpspergold'):
+    elif (type == 'dpsgold'):
         plt.ylabel("DPS/gold")
         
     fig = plt.gcf()

@@ -1,6 +1,7 @@
 from itertools import combinations_with_replacement
 from time import sleep
 import sys
+import random
 
 #Debug option
 DEBUG = 0
