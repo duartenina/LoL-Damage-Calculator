@@ -34,6 +34,74 @@ def optimal_build (armor, champ, extra, preset_items, time, boost, item_opt, n_i
             old_dps = dps
 
     return optimal_items
+    
+def optimal_path_best_dps (armor, champ, extra, items, time, boost, n_slots):
+    """
+    Calculate the path that maximizes the dps for each item for that build, i.e., discover in what order should the items be bought. Only uses n_slots and tries to buy the pieces before the big items.
+    """
+    
+    if (n_slots < len(items)):
+        print "Not enough slots to build all the items."
+        return False
+    
+    optimal_path  = []
+    current_build = []
+    
+    items_remain = []
+    for item in items:
+        items_remain.append(item)
+        
+        pieces = []
+        for itm in get_combine(item):
+            items_remain.append(itm)
+            if get_combine(itm):
+                items_remain += get_combine(itm)
+            
+        items_remain += pieces
+    
+    while (len(items_remain) > 0):
+        old_dps = calc_dps(armor, champ, extra, current_build, time, boost)
+        old_dps_no_slots = calc_dps(armor, champ, extra, current_build, time, boost)
+        has_space = 0
+        
+        for item in items_remain:
+            test_items = list(current_build)
+            test_items.append(item)
+            dps = calc_dps(armor, champ, extra, test_items, time, boost)
+            
+            if (dps > old_dps):
+                if (len(current_build) < n_slots) and (item.tier == 'Basic'):
+                    old_dps = dps
+                    best_item = item
+                    has_space = 1
+                elif list_in_list(get_combine(item), current_build):
+                    old_dps = dps
+                    best_item = item
+                    has_space = 1
+                elif (at_least_one_in(get_combine(item), current_build)) and (len(current_build) >= n_slots) and (dps > old_dps_no_slots):
+                    old_dps_no_slots = dps
+                    best_item_no_slots = item
+        
+        if (has_space == 0):
+            best_item = best_item_no_slots
+                
+        if (DEBUG): print best_item.name
+        optimal_path.append(best_item)
+        for item in get_combine(best_item):
+            if (item in current_build):
+                current_build.remove(item)
+            elif (has_space == 0):
+                items_remain.remove(item)
+                for itm in get_combine(item):
+                    if (itm in current_build):
+                        current_build.remove(itm)
+                    else:
+                        items_remain.remove(itm)
+                    
+        current_build.append(best_item)
+        items_remain.remove(best_item)
+  
+    return optimal_path
 
 def reduced_armor (armor, flat_penetration, percent_penetration, flat_reduction, percent_reduction):
     """

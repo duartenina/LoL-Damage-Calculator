@@ -5,8 +5,6 @@ from code.champ import *
 from code.item  import *
 from code.extra import *
 
-#Settings for the different curves of the graph
-graph_settings = ['k.', 'r.', 'g.', 'b.', 'm.', 'y.', 'c.', 'w.']
 
 def get_label (champ, level, items, time):
     """
@@ -32,14 +30,12 @@ def make_graph (graph_type, armor_val, builds, boost, file):
     
     armor_range = range(armor_val['min'], armor_val['max'], 1)
        
-    n = len(builds)
-        
-    for i in xrange(n):
+    for build in builds:
         dps = []
-        champ = builds[i]['champ']
-        extra = builds[i]['extra']
-        items = builds[i]['items']
-        time  = builds[i]['time']
+        champ = build['champ']
+        extra = build['extra']
+        items = build['items']
+        time  = build['time']
         total_price = 0
         
         for armor in armor_range:
@@ -51,7 +47,6 @@ def make_graph (graph_type, armor_val, builds, boost, file):
                 temp /= total_price/1000.
             dps.append(temp)
         
-        #plt.plot(armor_range, dps, graph_settings[i], label = get_label(champ, items, time))
         plt.plot(armor_range, dps, label = get_label(champ, extra['level'], items, time))
         
     plt.legend()

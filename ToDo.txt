@@ -1,10 +1,11 @@
 *COMMENT!
 
-*Change int() and float() to to_int() and to_float() (custom functions that don't break with '' or '.')
+*Change dps calculation from simple average to calc each hit and then average?
 
 *BugFixes:
-  +MasterYi's 
-  +Optimal build ALWAYS fills all the possible slots: working as intended or not?
+  +MasterYi's E and R sinergy
+  +Optimal build ALWAYS fills all the possible slots: working as intended or not? (easily noticed if limited budget)
+  +DPS/gold is not working very well
 
 *Add more champions abilities:
   +Cait's passive
@@ -12,18 +13,15 @@
   +Draven's passive and Q
   +Ez's passive
   +Kog's W
-  +Yi's E Active
   +MF's W passive
   +Trynd's Q
   +Twitch's passive and ult
   +Varus's passive and W
   +Vayne's W
   
-*Add "Best build path"   
-  +Start with end items  
-  +Calculate the item path that keeps the highest DPS throughout the game  
-  +Options:  
-    »Number of slots
+*"Optimal build path"   
+  +"Top to bottom" method: start with build, see which item increases the dps the most, take its pieces, see which increases the dps the most, etc
+  +Add functional scrollbar to path
   
 *Add "What's the best stat now?" (half-thought idea)  
   +Start with a build  

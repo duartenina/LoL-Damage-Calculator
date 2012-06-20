@@ -59,6 +59,27 @@ class item:
         
         return dict
 
+def get_combine (item):
+    """
+    Get the items needed to complete the item 'item'.
+    """
+
+    pieces = item.combine
+    combine = []
+    p = 0
+    q = 0
+    
+    while True:
+        p = pieces.find('+',q)
+        if (p == -1):
+            if (get_item(pieces[q:])):
+                combine.append(get_item(pieces[q:]))
+            break
+        combine.append(get_item(pieces[q:p]))
+        q = p + 1
+        
+    return combine        
+        
 def load_items (file='item.dat'):
     """
     Loads all items from file and returns list of item class instances (default file 'item.dat')
@@ -71,6 +92,10 @@ def load_items (file='item.dat'):
     return items            
     
 def filter_items_tiers (tiers={'None': 1, 'Basic': 1, 'Advanced': 1, 'Legendary': 1}, items=load_items()):
+    """
+    Filter the list of items 'items' according to their tiers.
+    """
+    
     new_items = []
     
     for item in items:
@@ -78,6 +103,18 @@ def filter_items_tiers (tiers={'None': 1, 'Basic': 1, 'Advanced': 1, 'Legendary'
             new_items.append(item)
         
     return new_items
+    
+def tier_items (items=load_items()):
+    """
+    Organize the list of items into a dict of tiers
+    """
+    
+    tier_list = {'Basic': [], 'Advanced': [], 'Legendary': []}
+    
+    for item in items:
+        tier_list[item.tier].append(item)
+        
+    return tier_list
     
 def get_item (name, items=load_items()):
     """
@@ -191,4 +228,5 @@ def get_item_boost (item_name, n_attacks):
         n = n_attacks - 2 
         
     return {'n': n, 'value': value}    
+    
     
